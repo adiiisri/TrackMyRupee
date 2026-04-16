@@ -3,7 +3,10 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, User, PlusCircle, Activity, Moon, Sun } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
-import { ExpenseProvider } from './context/ExpenseContext';
+import { ExpenseProvider, useExpense } from './context/ExpenseContext';
+import { X } from 'lucide-react';
+
+const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Bills', 'Other'];
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -15,7 +18,24 @@ import { Link } from 'react-router-dom';
 // Layout Placeholder
 const Layout = ({ children }) => {
   const { logout } = useAuth();
+  const { addExpense } = useExpense();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none'
+  });
+
+  const handleGlobalAddSubmit = async (e) => {
+    e.preventDefault();
+    const res = await addExpense({ ...formData, amount: Number(formData.amount) });
+    if (res.success) {
+      setShowAddModal(false);
+      setFormData({ amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none' });
+    } else {
+      alert(res.error);
+    }
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -50,15 +70,14 @@ const Layout = ({ children }) => {
           <Link to="/" style={{ fontWeight: 500, color: 'var(--accent-primary)', borderBottom: '2px solid var(--accent-primary)', paddingBottom: '0.5rem', marginTop: '0.5rem' }}>Dashboard</Link>
           <Link to="/expenses" style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>Expenses</Link>
           <Link to="/budgets" style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>Budgets</Link>
-          <span style={{ fontWeight: 500, color: 'var(--text-muted)', cursor: 'not-allowed' }}>Subscriptions</span>
           <span style={{ fontWeight: 500, color: 'var(--text-muted)', cursor: 'not-allowed' }}>Goals</span>
         </nav>
 
         {/* RIGHT ACTIONS */}
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <Link to="/expenses" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--accent-primary)', fontWeight: 600, textDecoration: 'none' }}>
+          <button onClick={() => setShowAddModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
              Add <PlusCircle size={18} />
-          </Link>
+          </button>
           
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
             <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
@@ -78,6 +97,53 @@ const Layout = ({ children }) => {
       <main style={{ padding: '2rem 1rem', flex: 1, backgroundColor: 'var(--bg-primary)' }}>
         {children}
       </main>
+
+      {/* Global Add Expense Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="card" style={{ padding: '2rem', width: '100%', maxWidth: '500px', position: 'relative' }}>
+              <button onClick={() => setShowAddModal(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <h3 style={{ marginBottom: '1.5rem' }}>Add New Expense</h3>
+              <form onSubmit={handleGlobalAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Amount (₹)</label>
+                    <input type="number" required value={formData.amount} onChange={(e) => setFormData({...formData, amount: e.target.value})} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
+                    <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
+                  <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Description</label>
+                  <input type="text" required value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input type="checkbox" id="global-recurring" style={{ width: 'auto' }} checked={formData.isRecurring} onChange={(e) => setFormData({...formData, isRecurring: e.target.checked})} />
+                  <label htmlFor="global-recurring" style={{ fontSize: '0.875rem', fontWeight: 500 }}>Is Recurring?</label>
+                </div>
+                {formData.isRecurring && (
+                  <div>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Frequency</label>
+                    <select value={formData.recurringFrequency} onChange={(e) => setFormData({...formData, recurringFrequency: e.target.value})}>
+                      <option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                )}
+                <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>Save Expense</button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 };
