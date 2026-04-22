@@ -1,10 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, User, PlusCircle, Activity, Moon, Sun } from 'lucide-react';
+import { Bell, User, PlusCircle, Activity, Moon, Sun, X, Shield, Laptop, Palmtree } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { ExpenseProvider, useExpense } from './context/ExpenseContext';
-import { X } from 'lucide-react';
+import { GoalProvider } from './context/GoalContext';
+import { IncomeProvider } from './context/IncomeContext';
 
 const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Bills', 'Other'];
 
@@ -12,8 +13,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ExpensesManager from './pages/ExpensesManager';
+import IncomesManager from './pages/IncomesManager';
 import Budgets from './pages/Budgets';
-import { Link } from 'react-router-dom';
+import Goals from './pages/Goals';
+import { NavLink, Link } from 'react-router-dom';
 
 // Layout Placeholder
 const Layout = ({ children }) => {
@@ -67,10 +70,11 @@ const Layout = ({ children }) => {
 
         {/* CENTER LINKS */}
         <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-          <Link to="/" style={{ fontWeight: 500, color: 'var(--accent-primary)', borderBottom: '2px solid var(--accent-primary)', paddingBottom: '0.5rem', marginTop: '0.5rem' }}>Dashboard</Link>
-          <Link to="/expenses" style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>Expenses</Link>
-          <Link to="/budgets" style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>Budgets</Link>
-          <span style={{ fontWeight: 500, color: 'var(--text-muted)', cursor: 'not-allowed' }}>Goals</span>
+          <NavLink to="/" className="nav-link">Dashboard</NavLink>
+          <NavLink to="/incomes" className="nav-link">Income</NavLink>
+          <NavLink to="/expenses" className="nav-link">Expenses</NavLink>
+          <NavLink to="/budgets" className="nav-link">Budgets</NavLink>
+          <NavLink to="/goals" className="nav-link">Goals</NavLink>
         </nav>
 
         {/* RIGHT ACTIONS */}
@@ -159,15 +163,21 @@ function App() {
 
   return (
     <ExpenseProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-          <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/expenses" element={<ProtectedRoute><ExpensesManager /></ProtectedRoute>} />
-          <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
-        </Routes>
-      </Router>
+      <IncomeProvider>
+        <GoalProvider>
+          <Router>
+            <Routes>
+              <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+              <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
+              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/incomes" element={<ProtectedRoute><IncomesManager /></ProtectedRoute>} />
+              <Route path="/expenses" element={<ProtectedRoute><ExpensesManager /></ProtectedRoute>} />
+              <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
+              <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+            </Routes>
+          </Router>
+        </GoalProvider>
+      </IncomeProvider>
     </ExpenseProvider>
   );
 }

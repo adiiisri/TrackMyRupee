@@ -10,9 +10,9 @@
   --text-secondary: #475569;
   --text-muted: #94a3b8;
   
-  --accent-primary: #22c55e;
-  --accent-hover: #16a34a;
-  --accent-light: #dcfce7;
+  --accent-primary: #10B981; /* Synced Green Accent */
+  --accent-hover: #059669;
+  --accent-light: #d1fae5;
 
   --success: #10b981;
   --success-light: #d1fae5;
@@ -36,27 +36,27 @@
 }
 
 [data-theme="dark"] {
-  /* Premium Dark Mode Palette */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
+  /* Deep Slate Dark Mode Palette */
+  --bg-primary: #111827; 
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
   
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
   
-  --accent-primary: #22c55e;
-  --accent-hover: #4ade80;
+  --accent-primary: #10B981; /* Synced Green Accent */
+  --accent-hover: #34d399;
   --accent-light: #064e3b;
 
-  --success: #34d399;
+  --success: #10B981;
   --success-light: #064e3b;
-  --danger: #f87171;
+  --danger: #ef4444;
   --danger-light: #7f1d1d;
   --warning: #fbbf24;
   --warning-light: #78350f;
 
-  --border-color: #334155;
+  --border-color: #374151;
   
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
 }
@@ -85,6 +85,47 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Navbar Links */
+.nav-link {
+  position: relative;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.nav-link:hover {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-link.active {
+  color: var(--accent-primary);
+}
+
+.nav-link.active::after {
+  transform: scaleX(1);
 }
 
 button {

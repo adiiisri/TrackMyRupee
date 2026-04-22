@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useExpense } from '../context/ExpenseContext';
+import { useIncome } from '../context/IncomeContext';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { motion } from 'framer-motion';
@@ -9,15 +10,20 @@ const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 
 const Dashboard = () => {
   const { expenses, fetchExpenses, budgets, fetchBudgets, loading } = useExpense();
+  const { incomes, fetchIncomes } = useIncome();
 
   useEffect(() => {
     fetchExpenses();
+    fetchIncomes();
     const today = new Date();
     fetchBudgets(today.getMonth() + 1, today.getFullYear());
-  }, [fetchExpenses, fetchBudgets]);
+  }, [fetchExpenses, fetchIncomes, fetchBudgets]);
 
   const totalExpenses = useMemo(() => expenses.reduce((acc, curr) => acc + curr.amount, 0), [expenses]);
+  const totalIncome = useMemo(() => incomes.reduce((acc, curr) => acc + curr.amount, 0), [incomes]);
   const totalBudget = useMemo(() => budgets.reduce((acc, curr) => acc + curr.amount, 0), [budgets]);
+  
+  const availableBalance = totalIncome - totalExpenses;
   
   const budgetStatus = totalBudget - totalExpenses;
   const isUnderBudget = budgetStatus >= 0;
@@ -59,6 +65,19 @@ const Dashboard = () => {
   return (
     <motion.div className="container" variants={containerVariants} initial="hidden" animate="show" style={{ maxWidth: '1400px' }}>
       
+      {/* Top Banner: Available Balance */}
+      <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-secondary)', borderLeft: '6px solid var(--accent-primary)' }}>
+        <div>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Available Balance</p>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: '0.25rem 0', color: availableBalance >= 0 ? 'var(--text-primary)' : 'var(--danger)' }}>
+            ₹{availableBalance.toLocaleString()}
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+            <span style={{ color: 'var(--success)' }}>+₹{totalIncome.toLocaleString()}</span> Income &nbsp; | &nbsp; <span style={{ color: 'var(--danger)' }}>-₹{totalExpenses.toLocaleString()}</span> Expenses
+          </p>
+        </div>
+      </motion.div>
+
       {/* Top Row: 3 Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
         

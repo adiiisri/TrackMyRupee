@@ -10,6 +10,8 @@ import { configurePassport } from './config/passport.js';
 import authRoutes from './routes/authRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import budgetRoutes from './routes/budgetRoutes.js';
+import goalRoutes from './routes/goalRoutes.js';
+import incomeRoutes from './routes/incomeRoutes.js';
 import { initCronJobs } from './utils/cronJobs.js';
 // Load env vars
 dotenv.config();
@@ -42,6 +44,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/goals', goalRoutes);
+app.use('/api/incomes', incomeRoutes);
 
 // Error Handling Middleware
 app.use(notFound);
