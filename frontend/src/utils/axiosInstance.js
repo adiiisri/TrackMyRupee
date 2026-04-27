@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: import.meta.env.MODE === 'development' 
+    ? 'http://localhost:5000/api' 
+    : 'https://trackmyrupee.onrender.com/api',
 });
 
 // Add a request interceptor
