@@ -55,15 +55,17 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Google OAuth Callback handling
-// @route   GET /api/auth/google/callback
-// @access  Public
-export const googleCallback = asyncHandler(async (req, res) => {
-  if (req.user) {
-    const token = generateToken(req.user._id);
-    // Redirect to frontend with token in URL 
-    res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}`);
-  } else {
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+export const googleCallback = async (req, res, next) => {
+  try {
+    if (req.user) {
+      const token = generateToken(req.user._id);
+      // Redirect to frontend with token in URL 
+      res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?token=${token}`);
+    } else {
+      res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?error=auth_failed`);
+    }
+  } catch (error) {
+    console.error("Google Callback Error:", error);
+    res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?error=server_error`);
   }
-});
+};
