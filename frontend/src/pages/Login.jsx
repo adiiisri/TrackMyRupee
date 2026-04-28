@@ -12,6 +12,20 @@ const Login = () => {
 
   useEffect(() => {
     if (user) navigate('/');
+    
+    // Check for errors from backend redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlError = urlParams.get('error');
+    if (urlError === 'oauth_error') {
+      setError('Google Login failed. Please check backend logs or try again.');
+      window.history.replaceState({}, document.title, "/login");
+    } else if (urlError === 'auth_failed') {
+      setError('Authentication failed. User could not be created.');
+      window.history.replaceState({}, document.title, "/login");
+    } else if (urlError === 'server_error') {
+      setError('A critical server error occurred. Check backend logs.');
+      window.history.replaceState({}, document.title, "/login");
+    }
   }, [user, navigate]);
 
   const handleSubmit = async (e) => {
