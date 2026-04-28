@@ -24,7 +24,10 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+app.use(cors({ 
+  origin: process.env.FRONTEND_URL || "https://track-my-rupee.vercel.app", 
+  credentials: true 
+}));
 app.use(helmet());
 
 if (process.env.NODE_ENV === 'development') {

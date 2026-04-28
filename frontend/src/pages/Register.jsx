@@ -25,7 +25,10 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    const baseURL = import.meta.env.MODE === 'development' 
+      ? 'http://localhost:5000/api' 
+      : 'https://trackmyrupee.onrender.com/api';
+    window.location.href = `${baseURL}/auth/google`;
   };
 
   return (
