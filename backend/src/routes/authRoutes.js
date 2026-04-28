@@ -16,7 +16,19 @@ router.get(
 // Google OAuth callback
 router.get(
   '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  (req, res, next) => {
+    passport.authenticate('google', { session: false }, (err, user, info) => {
+      if (err) {
+        console.error("Passport Auth Error:", err);
+        return res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?error=oauth_error`);
+      }
+      if (!user) {
+        return res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?error=auth_failed`);
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   googleCallback
 );
 
