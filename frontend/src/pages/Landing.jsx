@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, TrendingUp, Shield, BarChart3, Target, Sparkles, CheckCircle2, 
-  Sparkle, CircleDollarSign 
+  Sparkle, CircleDollarSign, Moon, Sun 
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
 
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#0b0f19', // Deep luxurious slate
-      color: '#f3f4f6',
+      backgroundColor: theme === 'dark' ? '#0b0f19' : '#ffffff',
+      color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
       fontFamily: "'Inter', sans-serif', system-ui",
       position: 'relative',
       overflow: 'hidden',
@@ -29,7 +37,9 @@ const Landing = () => {
         width: '50vw',
         height: '50vw',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(0,0,0,0) 70%)',
+        background: theme === 'dark'
+          ? 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(0,0,0,0) 70%)'
+          : 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%)',
         zIndex: 1,
         pointerEvents: 'none'
       }} />
@@ -40,7 +50,9 @@ const Landing = () => {
         width: '50vw',
         height: '50vw',
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(0,0,0,0) 70%)',
+        background: theme === 'dark'
+          ? 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, rgba(0,0,0,0) 70%)'
+          : 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(0,0,0,0) 70%)',
         zIndex: 1,
         pointerEvents: 'none'
       }} />
@@ -74,7 +86,9 @@ const Landing = () => {
             fontWeight: 800,
             letterSpacing: '-0.5px',
             margin: 0,
-            background: 'linear-gradient(to right, #ffffff, #a7f3d0)',
+            background: theme === 'dark'
+              ? 'linear-gradient(to right, #ffffff, #a7f3d0)'
+              : 'linear-gradient(to right, #111827, #059669)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
@@ -82,33 +96,58 @@ const Landing = () => {
           </h1>
         </div>
 
-        <button
-          id="btn-nav-dashboard"
-          onClick={() => navigate('/dashboard')}
-          className="btn btn-outline"
-          style={{
-            borderColor: 'rgba(16, 185, 129, 0.3)',
-            color: '#10b981',
-            padding: '0.5rem 1.25rem',
-            fontSize: '0.875rem',
-            fontWeight: 600,
-            borderRadius: '10px',
-            backdropFilter: 'blur(4px)',
-            transition: 'all 0.2s ease',
-            backgroundColor: 'rgba(16, 185, 129, 0.05)',
-            cursor: 'pointer'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-            e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.6)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
-            e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-          }}
-        >
-          Launch Dashboard
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: theme === 'dark' ? '#34d399' : '#059669',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '0.625rem',
+              borderRadius: '50%',
+              backgroundColor: theme === 'dark' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(16, 185, 129, 0.05)',
+              transition: 'all 0.2s',
+              boxShadow: theme === 'dark' ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          <button
+            id="btn-nav-dashboard"
+            onClick={() => navigate('/dashboard')}
+            className="btn btn-outline"
+            style={{
+              borderColor: 'rgba(16, 185, 129, 0.3)',
+              color: '#10b981',
+              padding: '0.5rem 1.25rem',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              borderRadius: '10px',
+              backdropFilter: 'blur(4px)',
+              transition: 'all 0.2s ease',
+              backgroundColor: 'rgba(16, 185, 129, 0.05)',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+            }}
+          >
+            Launch Dashboard
+          </button>
+        </div>
       </header>
 
       {/* HERO SECTION */}
@@ -131,13 +170,13 @@ const Landing = () => {
           display: 'inline-flex',
           alignItems: 'center',
           gap: '0.5rem',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          border: '1px solid rgba(16, 185, 129, 0.2)',
+          backgroundColor: theme === 'dark' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.08)',
+          border: theme === 'dark' ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(16, 185, 129, 0.25)',
           padding: '0.375rem 1rem',
           borderRadius: '9999px',
           fontSize: '0.875rem',
           fontWeight: 600,
-          color: '#34d399',
+          color: theme === 'dark' ? '#34d399' : '#047857',
           marginBottom: '2rem',
           boxShadow: '0 4px 20px rgba(16, 185, 129, 0.05)'
         }}>
@@ -152,7 +191,9 @@ const Landing = () => {
           letterSpacing: '-1.5px',
           maxWidth: '850px',
           margin: '0 0 1.5rem 0',
-          background: 'linear-gradient(to bottom, #ffffff 60%, #9ca3af 100%)',
+          background: theme === 'dark'
+            ? 'linear-gradient(to bottom, #ffffff 60%, #9ca3af 100%)'
+            : 'linear-gradient(to bottom, #111827 60%, #4b5563 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent'
         }}>
@@ -166,7 +207,7 @@ const Landing = () => {
         {/* Sub-heading */}
         <p style={{
           fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-          color: '#9ca3af',
+          color: theme === 'dark' ? '#9ca3af' : '#4b5563',
           maxWidth: '650px',
           lineHeight: 1.6,
           margin: '0 0 3rem 0'
@@ -205,7 +246,7 @@ const Landing = () => {
           >
             Enter Trial Dashboard <ArrowRight size={20} />
           </button>
-          <span style={{ fontSize: '0.8125rem', color: '#6b7280' }}>
+          <span style={{ fontSize: '0.8125rem', color: theme === 'dark' ? '#6b7280' : '#4b5563' }}>
             No credit card, no signups required. Sandbox profile fully pre-loaded.
           </span>
         </div>
@@ -221,60 +262,60 @@ const Landing = () => {
         }}>
           {/* Card 1 */}
           <div style={{
-            background: 'rgba(17, 24, 39, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: theme === 'dark' ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.75)',
+            border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.06)',
             padding: '1.75rem',
             borderRadius: '16px',
             backdropFilter: 'blur(12px)',
             transition: 'transform 0.2s ease',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: theme === 'dark' ? 'var(--shadow-md)' : '0 8px 30px rgba(0,0,0,0.03)'
           }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ color: '#10b981', marginBottom: '1rem' }}><TrendingUp size={24} /></div>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Expense Manager</h3>
-            <p style={{ fontSize: '0.875rem', color: '#9ca3af', lineHeight: 1.5, margin: 0 }}>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: theme === 'dark' ? '#ffffff' : '#111827' }}>Expense Manager</h3>
+            <p style={{ fontSize: '0.875rem', color: theme === 'dark' ? '#9ca3af' : '#4b5563', lineHeight: 1.5, margin: 0 }}>
               Easily catalog, search, and categorize daily expenses in rupees dynamically.
             </p>
           </div>
 
           {/* Card 2 */}
           <div style={{
-            background: 'rgba(17, 24, 39, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: theme === 'dark' ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.75)',
+            border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.06)',
             padding: '1.75rem',
             borderRadius: '16px',
             backdropFilter: 'blur(12px)',
             transition: 'transform 0.2s ease',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: theme === 'dark' ? 'var(--shadow-md)' : '0 8px 30px rgba(0,0,0,0.03)'
           }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ color: '#34d399', marginBottom: '1rem' }}><BarChart3 size={24} /></div>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Visual Budgeting</h3>
-            <p style={{ fontSize: '0.875rem', color: '#9ca3af', lineHeight: 1.5, margin: 0 }}>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: theme === 'dark' ? '#ffffff' : '#111827' }}>Visual Budgeting</h3>
+            <p style={{ fontSize: '0.875rem', color: theme === 'dark' ? '#9ca3af' : '#4b5563', lineHeight: 1.5, margin: 0 }}>
               Set category limits with colorful dynamic bars that warn you as you spend.
             </p>
           </div>
 
           {/* Card 3 */}
           <div style={{
-            background: 'rgba(17, 24, 39, 0.6)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: theme === 'dark' ? 'rgba(17, 24, 39, 0.6)' : 'rgba(255, 255, 255, 0.75)',
+            border: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.06)',
             padding: '1.75rem',
             borderRadius: '16px',
             backdropFilter: 'blur(12px)',
             transition: 'transform 0.2s ease',
-            boxShadow: 'var(--shadow-md)'
+            boxShadow: theme === 'dark' ? 'var(--shadow-md)' : '0 8px 30px rgba(0,0,0,0.03)'
           }}
           onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
           onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
           >
             <div style={{ color: '#10b981', marginBottom: '1rem' }}><Target size={24} /></div>
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Savings Targets</h3>
-            <p style={{ fontSize: '0.875rem', color: '#9ca3af', lineHeight: 1.5, margin: 0 }}>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: theme === 'dark' ? '#ffffff' : '#111827' }}>Savings Targets</h3>
+            <p style={{ fontSize: '0.875rem', color: theme === 'dark' ? '#9ca3af' : '#4b5563', lineHeight: 1.5, margin: 0 }}>
               Track custom savings goals for laptops, trips, or emergencies with milestone progress.
             </p>
           </div>
