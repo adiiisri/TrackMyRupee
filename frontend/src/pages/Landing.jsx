@@ -284,7 +284,6 @@ const Landing = () => {
       {/* FOOTER */}
       <Footer />
     </div>
-    </div>
   );
 };
 
