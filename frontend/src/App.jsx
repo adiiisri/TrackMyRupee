@@ -16,6 +16,7 @@ import ExpensesManager from './pages/ExpensesManager';
 import IncomesManager from './pages/IncomesManager';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
+import Landing from './pages/Landing';
 import { NavLink, Link } from 'react-router-dom';
 
 // Layout Placeholder
@@ -70,7 +71,7 @@ const Layout = ({ children }) => {
 
         {/* CENTER LINKS */}
         <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-          <NavLink to="/" className="nav-link">Dashboard</NavLink>
+          <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
           <NavLink to="/incomes" className="nav-link">Income</NavLink>
           <NavLink to="/expenses" className="nav-link">Expenses</NavLink>
           <NavLink to="/budgets" className="nav-link">Budgets</NavLink>
@@ -167,9 +168,10 @@ function App() {
         <GoalProvider>
           <Router>
             <Routes>
-              <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-              <Route path="/register" element={user ? <Navigate to="/" replace /> : <Register />} />
-              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+              <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
+              <Route path="/" element={<Landing />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/incomes" element={<ProtectedRoute><IncomesManager /></ProtectedRoute>} />
               <Route path="/expenses" element={<ProtectedRoute><ExpensesManager /></ProtectedRoute>} />
               <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
