@@ -63,12 +63,12 @@ const Layout = ({ children }) => {
         boxShadow: 'var(--shadow-sm)'
       }}>
         {/* LOGO */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
           <Activity color="var(--accent-primary)" size={28} />
           <h2 style={{ fontSize: '1.25rem', fontFamily: 'Poppins, sans-serif', fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>
             TrackMyRupee
           </h2>
-        </div>
+        </Link>
 
         {/* CENTER LINKS */}
         <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
