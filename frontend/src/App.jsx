@@ -17,6 +17,7 @@ import IncomesManager from './pages/IncomesManager';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
 import Landing from './pages/Landing';
+import Footer from './components/Footer';
 import { NavLink, Link } from 'react-router-dom';
 
 // Layout Placeholder
@@ -149,6 +150,7 @@ const Layout = ({ children }) => {
           </div>
         )}
       </AnimatePresence>
+      <Footer />
     </div>
   )
 };
