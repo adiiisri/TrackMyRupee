@@ -51,17 +51,7 @@ const Layout = ({ children }) => {
   
   return (
     <div className="layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ 
-        padding: '1rem 2rem', 
-        backgroundColor: 'var(--bg-secondary)', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        boxShadow: 'var(--shadow-sm)'
-      }}>
+      <header className="dashboard-header">
         {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
           <Activity color="var(--accent-primary)" size={28} />
@@ -71,7 +61,7 @@ const Layout = ({ children }) => {
         </Link>
 
         {/* CENTER LINKS */}
-        <nav style={{ display: 'flex', gap: '2rem', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+        <nav className="dashboard-nav">
           <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
           <NavLink to="/incomes" className="nav-link">Income</NavLink>
           <NavLink to="/expenses" className="nav-link">Expenses</NavLink>

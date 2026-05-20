@@ -223,3 +223,51 @@ h1, h2, h3, h4, h5, h6 {
 .text-muted {
   color: var(--text-muted);
 }
+
+/* Premium Responsive Dashboard Header */
+.dashboard-header {
+  padding: 1rem 2rem;
+  background-color: var(--bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  /* Center the nav on large screens, completely overlapping-safe! */
+  .dashboard-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Wrap header and flow nav links to prevent any overlap */
+  .dashboard-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+  .dashboard-nav {
+    order: 3; /* Push navigation links to the next row dynamically */
+    width: 100%;
+    justify-content: center;
+    gap: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+  }
+}
+
