@@ -127,7 +127,7 @@ const Footer = () => {
               </a>
               {/* WhatsApp (Lucide MessageCircle) */}
               <a
-                href="https://wa.me"
+                href="https://wa.me/917307424238"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
