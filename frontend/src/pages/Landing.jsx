@@ -86,11 +86,7 @@ const Landing = () => {
             fontWeight: 800,
             letterSpacing: '-0.5px',
             margin: 0,
-            background: theme === 'dark'
-              ? 'linear-gradient(to right, #ffffff, #a7f3d0)'
-              : 'linear-gradient(to right, #111827, #059669)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            color: theme === 'dark' ? '#ffffff' : '#111827'
           }}>
             TrackMyRupee
           </h1>
@@ -191,17 +187,9 @@ const Landing = () => {
           letterSpacing: '-1.5px',
           maxWidth: '850px',
           margin: '0 0 1.5rem 0',
-          background: theme === 'dark'
-            ? 'linear-gradient(to bottom, #ffffff 60%, #9ca3af 100%)'
-            : 'linear-gradient(to bottom, #111827 60%, #4b5563 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
+          color: theme === 'dark' ? '#ffffff' : '#111827'
         }}>
-          Take Complete Control of Your <span style={{
-            background: 'linear-gradient(to right, #10b981, #34d399)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>Personal Wealth</span>
+          Take Complete Control of Your <span style={{ color: '#10b981' }}>Personal Wealth</span>
         </h2>
 
         {/* Sub-heading */}
