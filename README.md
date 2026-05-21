@@ -1,4 +1,6 @@
-# Expense Tracker (MERN Stack)
+# TrackMyRupee 
+
+Check it out [https://track-my-rupee.vercel.app/]
 
 A full-stack Expense Tracker web application built using the MERN stack with a clean, modern UI and scalable architecture.
 
