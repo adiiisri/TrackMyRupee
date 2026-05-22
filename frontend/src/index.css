@@ -33,6 +33,12 @@
   --radius-xl: 1rem;
 
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Dynamic Mouse Spotlight & Glassmorphism Colors */
+  --spotlight-color: rgba(16, 185, 129, 0.12);
+  --spotlight-color-secondary: rgba(59, 130, 246, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --header-bg: rgba(255, 255, 255, 0.8);
 }
 
 [data-theme="dark"] {
@@ -59,6 +65,12 @@
   --border-color: #374151;
   
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+
+  /* Dynamic Mouse Spotlight & Glassmorphism Colors (Dark Theme) */
+  --spotlight-color: rgba(16, 185, 129, 0.1);
+  --spotlight-color-secondary: rgba(59, 130, 246, 0.04);
+  --card-bg: rgba(31, 41, 55, 0.75);
+  --header-bg: rgba(17, 24, 39, 0.8);
 }
 
 * {
@@ -161,12 +173,20 @@ input:focus, select:focus, textarea:focus {
 }
 
 .card {
-  background-color: var(--bg-secondary);
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  transition: var(--transition);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: var(--shadow-lg), 0 10px 20px rgba(16, 185, 129, 0.05);
 }
 
 .btn {
@@ -227,7 +247,9 @@ h1, h2, h3, h4, h5, h6 {
 /* Premium Responsive Dashboard Header */
 .dashboard-header {
   padding: 1rem 2rem;
-  background-color: var(--bg-secondary);
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -269,5 +291,20 @@ h1, h2, h3, h4, h5, h6 {
     padding-top: 0.75rem;
     margin-top: 0.25rem;
   }
+}
+
+/* Spotlight Cursor Follow Background Effect */
+.cursor-spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    var(--spotlight-color) 0%,
+    var(--spotlight-color-secondary) 40%,
+    transparent 80%
+  );
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
