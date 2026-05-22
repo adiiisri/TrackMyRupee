@@ -1,16 +1,68 @@
-import { useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useExpense } from '../context/ExpenseContext';
 import { useIncome } from '../context/IncomeContext';
 import { Link } from 'react-router-dom';
 import { AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, CheckCircle, ExternalLink, Activity, Trophy } from 'lucide-react';
+import { TrendingUp, TrendingDown, CheckCircle, ExternalLink, Activity, Trophy, PlusCircle } from 'lucide-react';
 
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#64748b'];
 
 const Dashboard = () => {
-  const { expenses, fetchExpenses, budgets, fetchBudgets, loading } = useExpense();
+  const { expenses, fetchExpenses, budgets, fetchBudgets, loading, addExpense } = useExpense();
   const { incomes, fetchIncomes } = useIncome();
+
+  const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Bills', 'Other'];
+
+  const [quickExpense, setQuickExpense] = useState({
+    amount: '',
+    category: 'Food',
+    date: new Date().toISOString().split('T')[0],
+    description: '',
+    isRecurring: false,
+    recurringFrequency: 'none'
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleQuickSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      const res = await addExpense({
+        ...quickExpense,
+        amount: Number(quickExpense.amount)
+      });
+
+      if (res.success) {
+        setSuccessMessage('Expense added successfully!');
+        setQuickExpense({
+          amount: '',
+          category: 'Food',
+          date: new Date().toISOString().split('T')[0],
+          description: '',
+          isRecurring: false,
+          recurringFrequency: 'none'
+        });
+
+        // Re-fetch budgets for the month so budget pace stays calibrated
+        const today = new Date();
+        fetchBudgets(today.getMonth() + 1, today.getFullYear());
+
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setErrorMessage(res.error || 'Failed to add expense.');
+      }
+    } catch (err) {
+      setErrorMessage('An unexpected error occurred.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     fetchExpenses();
@@ -162,42 +214,131 @@ const Dashboard = () => {
             </div>
         </motion.div>
 
-        {/* Card 3: Smart Insights */}
+        {/* Card 3: Quick Add Expense */}
         <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-           <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-              <Trophy size={18} color="var(--text-muted)" /> Smart Insights - {new Date().toLocaleString('default', { month: 'long' })}
-            </h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, justifyContent: 'center' }}>
-               
-               <motion.div whileHover={{ x: 5 }} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <Trophy size={20} color="var(--warning)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                     Milestone Reached! You have successfully tracked <strong style={{ color: 'var(--text-primary)' }}>{expenses.length}</strong> transactions this month.
-                  </p>
-               </motion.div>
+           <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
+              <PlusCircle size={18} color="var(--accent-primary)" /> Quick Add Expense
+           </h3>
+           
+           {successMessage && (
+             <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', marginBottom: '0.75rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+               <CheckCircle size={14} /> {successMessage}
+             </motion.div>
+           )}
+           
+           {errorMessage && (
+             <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} style={{ backgroundColor: 'var(--danger-light)', color: 'var(--danger)', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', marginBottom: '0.75rem', fontWeight: 500 }}>
+               {errorMessage}
+             </motion.div>
+           )}
 
-               <motion.div whileHover={{ x: 5 }} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <TrendingUp size={20} color="var(--success)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                     {expenseByCategory[0] ? `You spent ${Math.round((expenseByCategory[0].value/totalExpenses)*100)}% of your expenses on ${expenseByCategory[0].name}. Reduce by 20% to save ₹${Math.round(expenseByCategory[0].value * 0.2)}.` : 'Log more expenses for insights!'}
-                  </p>
-               </motion.div>
+           <form onSubmit={handleQuickSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, justifyContent: 'center' }}>
+             <div style={{ display: 'flex', gap: '0.75rem' }}>
+               <div style={{ flex: 1 }}>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Amount (₹)</label>
+                 <div style={{ position: 'relative' }}>
+                   <span style={{ position: 'absolute', left: '0.5rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>₹</span>
+                   <input
+                     type="number"
+                     required
+                     placeholder="0.00"
+                     value={quickExpense.amount}
+                     onChange={(e) => setQuickExpense({ ...quickExpense, amount: e.target.value })}
+                     style={{ paddingLeft: '1.25rem', paddingRight: '0.5rem', height: '36px', fontSize: '0.75rem' }}
+                   />
+                 </div>
+               </div>
+               <div style={{ flex: 1 }}>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</label>
+                 <select
+                   value={quickExpense.category}
+                   onChange={(e) => setQuickExpense({ ...quickExpense, category: e.target.value })}
+                   style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                 >
+                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                 </select>
+               </div>
+             </div>
 
-               <motion.div whileHover={{ x: 5 }} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <TrendingDown size={20} color="var(--success)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                     Great job! Your recent spending trend is stabilizing.
-                  </p>
-               </motion.div>
+             <div style={{ display: 'flex', gap: '0.75rem' }}>
+               <div style={{ flex: 1 }}>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Date</label>
+                 <input
+                   type="date"
+                   required
+                   value={quickExpense.date}
+                   onChange={(e) => setQuickExpense({ ...quickExpense, date: e.target.value })}
+                   style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                 />
+               </div>
+               <div style={{ flex: 1 }}>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Description</label>
+                 <input
+                   type="text"
+                   required
+                   placeholder="e.g. Groceries"
+                   value={quickExpense.description}
+                   onChange={(e) => setQuickExpense({ ...quickExpense, description: e.target.value })}
+                   style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                 />
+               </div>
+             </div>
 
-            </div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.25rem' }}>
+               <input
+                 type="checkbox"
+                 id="quick-recurring"
+                 checked={quickExpense.isRecurring || false}
+                 onChange={(e) => setQuickExpense(prev => ({ ...prev, isRecurring: e.target.checked }))}
+                 style={{ width: '12px', height: '12px', cursor: 'pointer' }}
+               />
+               <label htmlFor="quick-recurring" style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer' }}>Is recurring?</label>
+             </div>
+
+             {quickExpense.isRecurring && (
+               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ overflow: 'hidden' }}>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Frequency</label>
+                 <select
+                   value={quickExpense.recurringFrequency || 'none'}
+                   onChange={(e) => setQuickExpense({ ...quickExpense, recurringFrequency: e.target.value })}
+                   style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                 >
+                   <option value="none">None</option>
+                   <option value="daily">Daily</option>
+                   <option value="weekly">Weekly</option>
+                   <option value="monthly">Monthly</option>
+                 </select>
+               </motion.div>
+             )}
+
+             <button
+               type="submit"
+               disabled={submitting}
+               className="btn btn-primary"
+               style={{ width: '100%', padding: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', fontSize: '0.8125rem' }}
+             >
+               {submitting ? 'Adding...' : 'Add Expense'}
+             </button>
+           </form>
         </motion.div>
 
       </div>
 
-      {/* Bottom Row: 2 Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1.2fr)', gap: '1.5rem' }}>
+      <style>{`
+        .dashboard-bottom-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+          gap: 1.5rem;
+        }
+        @media (max-width: 1024px) {
+          .dashboard-bottom-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      {/* Bottom Row: 2 Columns Grid */}
+      <div className="dashboard-bottom-grid">
         
         {/* Card 4: Daily Expenses */}
         <motion.div variants={itemVariants} className="card" style={{ padding: '2rem' }}>
