@@ -34,10 +34,8 @@
 
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Dynamic Mouse Spotlight & Glassmorphism Colors */
-  --spotlight-color: rgba(16, 185, 129, 0.12);
-  --spotlight-color-secondary: rgba(59, 130, 246, 0.04);
-  --card-bg: rgba(255, 255, 255, 0.75);
+  /* Glassmorphism Background Colors */
+  --card-bg: rgba(255, 255, 255, 0.7);
   --header-bg: rgba(255, 255, 255, 0.8);
 }
 
@@ -66,10 +64,8 @@
   
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
 
-  /* Dynamic Mouse Spotlight & Glassmorphism Colors (Dark Theme) */
-  --spotlight-color: rgba(16, 185, 129, 0.1);
-  --spotlight-color-secondary: rgba(59, 130, 246, 0.04);
-  --card-bg: rgba(31, 41, 55, 0.75);
+  /* Glassmorphism Background Colors (Dark Theme) */
+  --card-bg: rgba(31, 41, 55, 0.7);
   --header-bg: rgba(17, 24, 39, 0.8);
 }
 
@@ -293,18 +289,81 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Spotlight Cursor Follow Background Effect */
-.cursor-spotlight {
+/* Spotlight Dynamic Animated Background Mesh Gradient Blobs */
+.background-glow-container {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    var(--spotlight-color) 0%,
-    var(--spotlight-color-secondary) 40%,
-    transparent 80%
-  );
-  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+.glow-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  -webkit-filter: blur(140px);
+  opacity: 0.14;
+  transition: opacity 0.5s ease, background-color 0.5s ease;
+}
+
+[data-theme="dark"] .glow-blob {
+  opacity: 0.08;
+}
+
+.glow-blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 55vw;
+  height: 55vw;
+  background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+  animation: drift-pulse-1 25s infinite alternate ease-in-out;
+}
+
+.glow-blob-2 {
+  bottom: -15%;
+  right: -10%;
+  width: 65vw;
+  height: 65vw;
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  animation: drift-pulse-2 30s infinite alternate ease-in-out;
+}
+
+.glow-blob-3 {
+  top: 25%;
+  left: 35%;
+  width: 45vw;
+  height: 45vw;
+  background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+  animation: drift-pulse-3 22s infinite alternate ease-in-out;
+}
+
+@keyframes drift-pulse-1 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  100% {
+    transform: translate(12vw, 15vh) scale(1.15);
+  }
+}
+
+@keyframes drift-pulse-2 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  100% {
+    transform: translate(-10vw, -12vh) scale(1.1);
+  }
+}
+
+@keyframes drift-pulse-3 {
+  0% {
+    transform: translate(0px, 0px) scale(0.9);
+  }
+  100% {
+    transform: translate(-5vw, 10vh) scale(1.12);
+  }
 }
 

@@ -25,7 +25,6 @@ const Layout = ({ children }) => {
   const { logout } = useAuth();
   const { addExpense } = useExpense();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const [isMouseActive, setIsMouseActive] = useState(false);
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -48,34 +47,15 @@ const Layout = ({ children }) => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
-      setIsMouseActive((active) => {
-        if (!active) return true;
-        return active;
-      });
-    };
-
-    const handleMouseLeave = () => {
-      setIsMouseActive(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   
   return (
     <div className="layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-      <div className="cursor-spotlight" style={{ opacity: isMouseActive ? 1 : 0 }} />
+      <div className="background-glow-container">
+        <div className="glow-blob glow-blob-1" />
+        <div className="glow-blob glow-blob-2" />
+        <div className="glow-blob glow-blob-3" />
+      </div>
       <header className="dashboard-header">
         {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
