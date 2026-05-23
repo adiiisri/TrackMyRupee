@@ -145,6 +145,102 @@ const Layout = ({ children }) => {
   )
 };
 
+const CursorInteraction = () => {
+  useEffect(() => {
+    let lastPosition = { x: 0, y: 0 };
+    const distanceThreshold = 18; // spawn trail particle every 18px of movement
+
+    const handleMouseMove = (e) => {
+      const distance = Math.hypot(e.clientX - lastPosition.x, e.clientY - lastPosition.y);
+      if (distance < distanceThreshold) return;
+
+      lastPosition = { x: e.clientX, y: e.clientY };
+
+      const particle = document.createElement('div');
+      particle.className = 'trail-particle';
+      particle.style.left = `${e.clientX}px`;
+      particle.style.top = `${e.clientY}px`;
+      
+      // Randomly mix emerald green and sapphire blue for the trail
+      if (Math.random() > 0.5) {
+        particle.style.background = 'radial-gradient(circle, #3b82f6 0%, transparent 80%)';
+      }
+
+      document.body.appendChild(particle);
+
+      // Self-cleaning DOM node
+      setTimeout(() => {
+        if (particle.parentNode) {
+          document.body.removeChild(particle);
+        }
+      }, 800);
+    };
+
+    const handleMouseDown = (e) => {
+      // 1. Create a circular expanding ripple
+      const ripple = document.createElement('div');
+      ripple.className = 'click-ripple';
+      ripple.style.left = `${e.clientX}px`;
+      ripple.style.top = `${e.clientY}px`;
+      document.body.appendChild(ripple);
+
+      setTimeout(() => {
+        if (ripple.parentNode) {
+          document.body.removeChild(ripple);
+        }
+      }, 600);
+
+      // 2. Create exploding multi-sparks burst (8 directions)
+      const sparkCount = 8;
+      for (let i = 0; i < sparkCount; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'click-spark';
+        spark.style.left = `${e.clientX}px`;
+        spark.style.top = `${e.clientY}px`;
+
+        // Calculate radial translation angle & range
+        const angle = (i * (360 / sparkCount) + Math.random() * 20) * (Math.PI / 180);
+        const distance = 40 + Math.random() * 50; // shoot 40px to 90px
+        const sparkX = Math.cos(angle) * distance;
+        const sparkY = Math.sin(angle) * distance;
+        const duration = 0.5 + Math.random() * 0.3; // 500ms to 800ms
+
+        spark.style.setProperty('--spark-x', `${sparkX}px`);
+        spark.style.setProperty('--spark-y', `${sparkY}px`);
+        spark.style.setProperty('--spark-duration', `${duration}s`);
+        
+        // Match emerald green, sapphire blue, or amethyst purple colors
+        const rand = Math.random();
+        if (rand < 0.33) {
+          spark.style.backgroundColor = '#10B981';
+        } else if (rand < 0.66) {
+          spark.style.backgroundColor = '#3b82f6';
+        } else {
+          spark.style.backgroundColor = '#8b5cf6';
+        }
+
+        document.body.appendChild(spark);
+
+        setTimeout(() => {
+          if (spark.parentNode) {
+            document.body.removeChild(spark);
+          }
+        }, duration * 1000);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, []);
+
+  return null;
+};
+
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
@@ -158,6 +254,7 @@ function App() {
     <ExpenseProvider>
       <IncomeProvider>
         <GoalProvider>
+          <CursorInteraction />
           <Router>
             <Routes>
               <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
