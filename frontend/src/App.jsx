@@ -200,10 +200,10 @@ const CursorInteraction = () => {
       }
     };
 
-    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousedown', handleMouseDown, true);
 
     return () => {
-      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousedown', handleMouseDown, true);
     };
   }, []);
 
