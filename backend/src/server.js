@@ -12,6 +12,7 @@ import expenseRoutes from './routes/expenseRoutes.js';
 import budgetRoutes from './routes/budgetRoutes.js';
 import goalRoutes from './routes/goalRoutes.js';
 import incomeRoutes from './routes/incomeRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
 import { initCronJobs } from './utils/cronJobs.js';
 // Load env vars
 dotenv.config();
@@ -49,6 +50,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/incomes', incomeRoutes);
+app.use('/api/groups', groupRoutes);
 
 // Error Handling Middleware
 app.use(notFound);

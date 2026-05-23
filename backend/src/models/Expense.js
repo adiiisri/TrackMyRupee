@@ -7,6 +7,29 @@ const expenseSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
     },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Group',
+      required: false,
+    },
+    paidBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+    splits: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     amount: {
       type: Number,
       required: true,
