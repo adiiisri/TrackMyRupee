@@ -33,3 +33,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Exclude markdown workspace docs from automatic tracking
+ad.md
+Flow.md
