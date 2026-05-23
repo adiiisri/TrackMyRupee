@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useExpense } from '../context/ExpenseContext';
-import { Plus, Trash2, Search, Filter, Download } from 'lucide-react';
+import { Plus, Trash2, Search, Filter, Download, Edit2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Bills', 'Other'];
 
 const ExpensesManager = () => {
-  const { expenses, fetchExpenses, addExpense, deleteExpense, loading } = useExpense();
+  const { expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading } = useExpense();
   
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -17,6 +17,41 @@ const ExpensesManager = () => {
     isRecurring: false,
     recurringFrequency: 'none'
   });
+
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    amount: '',
+    category: 'Food',
+    date: '',
+    description: '',
+    isRecurring: false,
+    recurringFrequency: 'none'
+  });
+
+  const handleEditClick = (expense) => {
+    setEditingExpense(expense);
+    setEditFormData({
+      amount: expense.amount.toString(),
+      category: expense.category,
+      date: new Date(expense.date).toISOString().split('T')[0],
+      description: expense.description,
+      isRecurring: expense.isRecurring || false,
+      recurringFrequency: expense.recurringFrequency || 'none'
+    });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const res = await updateExpense(editingExpense._id, {
+      ...editFormData,
+      amount: Number(editFormData.amount)
+    });
+    if (res.success) {
+      setEditingExpense(null);
+    } else {
+      alert(res.error || 'Failed to update expense');
+    }
+  };
 
   const [filters, setFilters] = useState({
     category: 'All',
@@ -201,9 +236,14 @@ const ExpensesManager = () => {
                       <td style={{ padding: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>₹{expense.amount.toLocaleString()}</td>
                       <td style={{ padding: '1rem' }}>{expense.isRecurring ? <span style={{ color: 'var(--success)', fontWeight: 500 }}>{expense.recurringFrequency}</span> : <span style={{ color: 'var(--text-muted)' }}>No</span>}</td>
                       <td style={{ padding: '1rem' }}>
-                        <button onClick={() => deleteExpense(expense._id)} style={{ color: 'var(--danger)', padding: '0.5rem', borderRadius: 'var(--radius-sm)' }} title="Delete">
-                          <Trash2 size={18} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button onClick={() => handleEditClick(expense)} style={{ color: 'var(--accent-primary)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'inline-flex', alignItems: 'center' }} title="Edit">
+                            <Edit2 size={18} />
+                          </button>
+                          <button onClick={() => deleteExpense(expense._id)} style={{ color: 'var(--danger)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'inline-flex', alignItems: 'center' }} title="Delete">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </motion.tr>
                   ))
@@ -213,6 +253,64 @@ const ExpensesManager = () => {
           </div>
         </div>
       )}
+
+      {/* Edit Expense Glassmorphic Modal */}
+      <AnimatePresence>
+        {editingExpense && (
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="card" style={{ padding: '2rem', width: '100%', maxWidth: '500px', position: 'relative', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-lg)' }}>
+              <button onClick={() => setEditingExpense(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+              <h3 style={{ marginBottom: '1.5rem' }}>Edit Expense</h3>
+              <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Amount (₹)</label>
+                    <input type="number" required value={editFormData.amount} onChange={(e) => setEditFormData({...editFormData, amount: e.target.value})} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
+                    <select value={editFormData.category} onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}>
+                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
+                  <input type="date" required value={editFormData.date} onChange={(e) => setEditFormData({...editFormData, date: e.target.value})} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Description</label>
+                  <input type="text" required value={editFormData.description} onChange={(e) => setEditFormData({...editFormData, description: e.target.value})} />
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input type="checkbox" id="edit-recurring" style={{ width: 'auto' }} checked={editFormData.isRecurring} onChange={(e) => setEditFormData({...editFormData, isRecurring: e.target.checked})} />
+                  <label htmlFor="edit-recurring" style={{ fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer' }}>Is Recurring?</label>
+                </div>
+
+                {editFormData.isRecurring && (
+                  <div>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Frequency</label>
+                    <select value={editFormData.recurringFrequency} onChange={(e) => setEditFormData({...editFormData, recurringFrequency: e.target.value})}>
+                      <option value="none">None</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                )}
+                
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem' }}>
+                  <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Save Changes</button>
+                  <button type="button" className="btn btn-outline" onClick={() => setEditingExpense(null)} style={{ flex: 1 }}>Cancel</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

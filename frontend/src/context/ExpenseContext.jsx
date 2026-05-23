@@ -52,6 +52,16 @@ export const ExpenseProvider = ({ children }) => {
     }
   };
 
+  const updateExpense = async (id, expenseData) => {
+    try {
+      const { data } = await api.put(`/expenses/${id}`, expenseData);
+      setExpenses((prev) => prev.map((e) => (e._id === id ? data : e)));
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
   const fetchBudgets = useCallback(async (month, year) => {
     if(!user) return;
     try {
@@ -87,6 +97,7 @@ export const ExpenseProvider = ({ children }) => {
     loading,
     fetchExpenses,
     addExpense,
+    updateExpense,
     deleteExpense,
     fetchBudgets,
     saveBudget
