@@ -52,11 +52,22 @@ export const IncomeProvider = ({ children }) => {
     }
   };
 
+  const updateIncome = async (id, incomeData) => {
+    try {
+      const { data } = await api.put(`/incomes/${id}`, incomeData);
+      setIncomes((prev) => prev.map((i) => (i._id === id ? data : i)));
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
   const value = {
     incomes,
     loading,
     fetchIncomes,
     addIncome,
+    updateIncome,
     deleteIncome,
   };
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getIncomes, createIncome, deleteIncome } from '../controllers/incomeController.js';
+import { getIncomes, createIncome, updateIncome, deleteIncome } from '../controllers/incomeController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.route('/')
   .post(protect, createIncome);
 
 router.route('/:id')
+  .put(protect, updateIncome)
   .delete(protect, deleteIncome);
 
 export default router;

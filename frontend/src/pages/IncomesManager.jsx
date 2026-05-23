@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useIncome } from '../context/IncomeContext';
-import { Plus, Trash2, Search, Filter, Download } from 'lucide-react';
+import { Plus, Trash2, Search, Filter, Download, Edit2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SOURCES = ['Salary', 'Freelance', 'Investments', 'Gifts', 'Refunds', 'Business', 'Other'];
 
 const IncomesManager = () => {
-  const { incomes, fetchIncomes, addIncome, deleteIncome, loading } = useIncome();
+  const { incomes, fetchIncomes, addIncome, updateIncome, deleteIncome, loading } = useIncome();
   
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -17,6 +17,41 @@ const IncomesManager = () => {
     isRecurring: false,
     recurringFrequency: 'none'
   });
+
+  const [editingIncome, setEditingIncome] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    amount: '',
+    source: 'Salary',
+    date: '',
+    description: '',
+    isRecurring: false,
+    recurringFrequency: 'none'
+  });
+
+  const handleEditClick = (income) => {
+    setEditingIncome(income);
+    setEditFormData({
+      amount: income.amount.toString(),
+      source: income.source,
+      date: new Date(income.date).toISOString().split('T')[0],
+      description: income.description,
+      isRecurring: income.isRecurring || false,
+      recurringFrequency: income.recurringFrequency || 'none'
+    });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const res = await updateIncome(editingIncome._id, {
+      ...editFormData,
+      amount: Number(editFormData.amount)
+    });
+    if (res.success) {
+      setEditingIncome(null);
+    } else {
+      alert(res.error || 'Failed to update income');
+    }
+  };
 
   const [filters, setFilters] = useState({
     source: 'All',
@@ -201,9 +236,14 @@ const IncomesManager = () => {
                       <td style={{ padding: '1rem', color: 'var(--success)', fontWeight: 600 }}>+₹{income.amount.toLocaleString()}</td>
                       <td style={{ padding: '1rem' }}>{income.isRecurring ? <span style={{ color: 'var(--success)', fontWeight: 500 }}>{income.recurringFrequency}</span> : <span style={{ color: 'var(--text-muted)' }}>No</span>}</td>
                       <td style={{ padding: '1rem' }}>
-                        <button onClick={() => deleteIncome(income._id)} style={{ color: 'var(--danger)', padding: '0.5rem', borderRadius: 'var(--radius-sm)' }} title="Delete">
-                          <Trash2 size={18} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button onClick={() => handleEditClick(income)} style={{ color: 'var(--accent-primary)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'inline-flex', alignItems: 'center' }} title="Edit">
+                            <Edit2 size={18} />
+                          </button>
+                          <button onClick={() => deleteIncome(income._id)} style={{ color: 'var(--danger)', padding: '0.5rem', borderRadius: 'var(--radius-sm)', display: 'inline-flex', alignItems: 'center' }} title="Delete">
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </motion.tr>
                   ))
@@ -213,6 +253,64 @@ const IncomesManager = () => {
           </div>
         </div>
       )}
+
+      {/* Edit Income Glassmorphic Modal */}
+      <AnimatePresence>
+        {editingIncome && (
+          <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="card" style={{ padding: '2rem', width: '100%', maxWidth: '500px', position: 'relative', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-lg)' }}>
+              <button onClick={() => setEditingIncome(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', color: 'var(--text-muted)' }}>
+                <X size={20} />
+              </button>
+              <h3 style={{ marginBottom: '1.5rem' }}>Edit Income</h3>
+              <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Amount (₹)</label>
+                    <input type="number" required value={editFormData.amount} onChange={(e) => setEditFormData({...editFormData, amount: e.target.value})} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Source</label>
+                    <select value={editFormData.source} onChange={(e) => setEditFormData({...editFormData, source: e.target.value})}>
+                      {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
+                  <input type="date" required value={editFormData.date} onChange={(e) => setEditFormData({...editFormData, date: e.target.value})} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Description</label>
+                  <input type="text" required value={editFormData.description} onChange={(e) => setEditFormData({...editFormData, description: e.target.value})} />
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input type="checkbox" id="edit-recurring" style={{ width: 'auto' }} checked={editFormData.isRecurring} onChange={(e) => setEditFormData({...editFormData, isRecurring: e.target.checked})} />
+                  <label htmlFor="edit-recurring" style={{ fontSize: '0.875rem', fontWeight: 500, cursor: 'pointer' }}>Is Recurring?</label>
+                </div>
+
+                {editFormData.isRecurring && (
+                  <div>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Frequency</label>
+                    <select value={editFormData.recurringFrequency} onChange={(e) => setEditFormData({...editFormData, recurringFrequency: e.target.value})}>
+                      <option value="none">None</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                )}
+                
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem' }}>
+                  <button type="submit" className="btn btn-primary" style={{ flex: 1, backgroundColor: 'var(--success)', border: 'none', color: '#000' }}>Save Changes</button>
+                  <button type="button" className="btn btn-outline" onClick={() => setEditingIncome(null)} style={{ flex: 1 }}>Cancel</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

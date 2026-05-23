@@ -63,3 +63,27 @@ export const deleteIncome = asyncHandler(async (req, res) => {
     throw new Error('Income not found or unauthorized');
   }
 });
+
+// @desc    Update income
+// @route   PUT /api/incomes/:id
+// @access  Private
+export const updateIncome = asyncHandler(async (req, res) => {
+  const { amount, source, date, description, isRecurring, recurringFrequency } = req.body;
+
+  const income = await Income.findById(req.params.id);
+
+  if (income && income.user.toString() === req.user._id.toString()) {
+    income.amount = amount || income.amount;
+    income.source = source || income.source;
+    income.date = date || income.date;
+    income.description = description || income.description;
+    income.isRecurring = isRecurring !== undefined ? isRecurring : income.isRecurring;
+    income.recurringFrequency = recurringFrequency || income.recurringFrequency;
+
+    const updatedIncome = await income.save();
+    res.json(updatedIncome);
+  } else {
+    res.status(404);
+    throw new Error('Income not found or unauthorized');
+  }
+});
