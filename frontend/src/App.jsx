@@ -6,6 +6,8 @@ import { useAuth } from './context/AuthContext';
 import { ExpenseProvider, useExpense } from './context/ExpenseContext';
 import { GoalProvider } from './context/GoalContext';
 import { IncomeProvider } from './context/IncomeContext';
+import { GroupProvider } from './context/GroupContext';
+import GroupsManager from './pages/GroupsManager';
 
 const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Bills', 'Other'];
 
@@ -65,6 +67,7 @@ const Layout = ({ children }) => {
           <NavLink to="/dashboard" className="nav-link">Dashboard</NavLink>
           <NavLink to="/incomes" className="nav-link">Income</NavLink>
           <NavLink to="/expenses" className="nav-link">Expenses</NavLink>
+          <NavLink to="/groups" className="nav-link">Split Bill</NavLink>
           <NavLink to="/budgets" className="nav-link">Budgets</NavLink>
           <NavLink to="/goals" className="nav-link">Goals</NavLink>
         </nav>
@@ -223,19 +226,22 @@ function App() {
     <ExpenseProvider>
       <IncomeProvider>
         <GoalProvider>
-          <CursorInteraction />
-          <Router>
-            <Routes>
-              <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
-              <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
-              <Route path="/" element={<Landing />} />
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/incomes" element={<ProtectedRoute><IncomesManager /></ProtectedRoute>} />
-              <Route path="/expenses" element={<ProtectedRoute><ExpensesManager /></ProtectedRoute>} />
-              <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
-              <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
-            </Routes>
-          </Router>
+          <GroupProvider>
+            <CursorInteraction />
+            <Router>
+              <Routes>
+                <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+                <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
+                <Route path="/" element={<Landing />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/incomes" element={<ProtectedRoute><IncomesManager /></ProtectedRoute>} />
+                <Route path="/expenses" element={<ProtectedRoute><ExpensesManager /></ProtectedRoute>} />
+                <Route path="/groups" element={<ProtectedRoute><GroupsManager /></ProtectedRoute>} />
+                <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
+                <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+              </Routes>
+            </Router>
+          </GroupProvider>
         </GoalProvider>
       </IncomeProvider>
     </ExpenseProvider>
