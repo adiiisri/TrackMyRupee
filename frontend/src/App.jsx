@@ -147,35 +147,6 @@ const Layout = ({ children }) => {
 
 const CursorInteraction = () => {
   useEffect(() => {
-    let lastPosition = { x: 0, y: 0 };
-    const distanceThreshold = 18; // spawn trail particle every 18px of movement
-
-    const handleMouseMove = (e) => {
-      const distance = Math.hypot(e.clientX - lastPosition.x, e.clientY - lastPosition.y);
-      if (distance < distanceThreshold) return;
-
-      lastPosition = { x: e.clientX, y: e.clientY };
-
-      const particle = document.createElement('div');
-      particle.className = 'trail-particle';
-      particle.style.left = `${e.clientX}px`;
-      particle.style.top = `${e.clientY}px`;
-      
-      // Randomly mix emerald green and sapphire blue for the trail
-      if (Math.random() > 0.5) {
-        particle.style.background = 'radial-gradient(circle, #3b82f6 0%, transparent 80%)';
-      }
-
-      document.body.appendChild(particle);
-
-      // Self-cleaning DOM node
-      setTimeout(() => {
-        if (particle.parentNode) {
-          document.body.removeChild(particle);
-        }
-      }, 800);
-    };
-
     const handleMouseDown = (e) => {
       // 1. Create a circular expanding ripple
       const ripple = document.createElement('div');
@@ -229,11 +200,9 @@ const CursorInteraction = () => {
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
     };
   }, []);
