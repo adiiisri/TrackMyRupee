@@ -16,7 +16,7 @@ export const GoalProvider = ({ children }) => {
     if (!user) return;
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get('/api/goals');
+      const { data } = await axiosInstance.get('/goals');
       setGoals(data);
       setError(null);
     } catch (err) {
@@ -28,7 +28,7 @@ export const GoalProvider = ({ children }) => {
 
   const addGoal = async (goalData) => {
     try {
-      const { data } = await axiosInstance.post('/api/goals', goalData);
+      const { data } = await axiosInstance.post('/goals', goalData);
       setGoals(prev => [data, ...prev]);
       return { success: true };
     } catch (err) {
@@ -38,7 +38,7 @@ export const GoalProvider = ({ children }) => {
 
   const addFunds = async (goalId, amount) => {
     try {
-      const { data } = await axiosInstance.put(`/api/goals/${goalId}/add-funds`, { amount });
+      const { data } = await axiosInstance.put(`/goals/${goalId}/add-funds`, { amount });
       setGoals(prev => prev.map(g => g._id === goalId ? data : g));
       return { success: true };
     } catch (err) {
@@ -48,7 +48,7 @@ export const GoalProvider = ({ children }) => {
 
   const deleteGoal = async (goalId) => {
     try {
-      await axiosInstance.delete(`/api/goals/${goalId}`);
+      await axiosInstance.delete(`/goals/${goalId}`);
       setGoals(prev => prev.filter(g => g._id !== goalId));
       return { success: true };
     } catch (err) {

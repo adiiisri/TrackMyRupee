@@ -50,12 +50,7 @@ const Layout = ({ children }) => {
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   
   return (
-    <div className="layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-      <div className="background-glow-container">
-        <div className="glow-blob glow-blob-1" />
-        <div className="glow-blob glow-blob-2" />
-        <div className="glow-blob glow-blob-3" />
-      </div>
+    <div className="layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header className="dashboard-header">
         {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
