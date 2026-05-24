@@ -560,10 +560,10 @@ const GroupsManager = () => {
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <button
                       onClick={handleStartEditGroup}
-                      title="Manage Members"
+                      title="Edit Group Details"
                       style={{ color: 'var(--accent-primary)', padding: '0.25rem', display: 'inline-flex' }}
                     >
-                      <Settings size={20} />
+                      <Edit size={20} />
                     </button>
                     <button
                       onClick={() => handleDeleteGroup(activeGroup)}
