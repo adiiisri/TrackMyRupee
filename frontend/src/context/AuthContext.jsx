@@ -13,10 +13,29 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const userInfo = localStorage.getItem('userInfo');
+      let userInfo = localStorage.getItem('userInfo');
+
+      // Seed default mock token if not present to bypass login screen
+      if (!userInfo) {
+        const defaultMock = { token: 'mock-token', name: 'Demo User', email: 'demo@example.com' };
+        localStorage.setItem('userInfo', JSON.stringify(defaultMock));
+        userInfo = JSON.stringify(defaultMock);
+      }
+
       if (userInfo) {
         try {
-          setUser(JSON.parse(userInfo));
+          const parsedUser = JSON.parse(userInfo);
+          setUser(parsedUser);
+
+          // Sync actual user document (specifically the database ObjectId) from backend
+          try {
+            const { data } = await api.get('/auth/me');
+            const fullUser = { ...data, token: parsedUser.token };
+            localStorage.setItem('userInfo', JSON.stringify(fullUser));
+            setUser(fullUser);
+          } catch (apiError) {
+            console.warn('Backend profile sync failed, running with local credentials:', apiError);
+          }
         } catch (e) {
           localStorage.removeItem('userInfo');
         }
