@@ -16,12 +16,12 @@ const Dashboard = () => {
 
   const [quickExpense, setQuickExpense] = useState({
     amount: '',
-    category: 'Food',
+    category: '',
     date: new Date().toISOString().split('T')[0],
     description: '',
     isRecurring: false,
     recurringFrequency: 'none',
-    paymentMode: 'Cash'
+    paymentMode: ''
   });
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -43,12 +43,12 @@ const Dashboard = () => {
         setSuccessMessage('Expense added successfully!');
         setQuickExpense({
           amount: '',
-          category: 'Food',
+          category: '',
           date: new Date().toISOString().split('T')[0],
           description: '',
           isRecurring: false,
           recurringFrequency: 'none',
-          paymentMode: 'Cash'
+          paymentMode: ''
         });
 
         // Re-fetch budgets for the month so budget pace stays calibrated
@@ -257,27 +257,31 @@ const Dashboard = () => {
                  </div>
                </div>
                <div style={{ flex: 1 }}>
-                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</label>
-                 <select
-                   value={quickExpense.category}
-                   onChange={(e) => setQuickExpense({ ...quickExpense, category: e.target.value })}
-                   style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                 >
-                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                 </select>
-               </div>
-               <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Mode</label>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Category</label>
                   <select
-                    value={quickExpense.paymentMode || 'Cash'}
-                    onChange={(e) => setQuickExpense({ ...quickExpense, paymentMode: e.target.value })}
+                    required
+                    value={quickExpense.category}
+                    onChange={(e) => setQuickExpense({ ...quickExpense, category: e.target.value })}
                     style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
                   >
-                    <option value="Cash">Cash</option>
-                    <option value="UPI">UPI</option>
-                    <option value="Card">Card</option>
+                    <option value="" disabled>Select Category</option>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
+                <div style={{ flex: 1 }}>
+                   <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Mode</label>
+                   <select
+                     required
+                     value={quickExpense.paymentMode}
+                     onChange={(e) => setQuickExpense({ ...quickExpense, paymentMode: e.target.value })}
+                     style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                   >
+                     <option value="" disabled>Select Payment Mode</option>
+                     <option value="Cash">Cash</option>
+                     <option value="UPI">UPI</option>
+                     <option value="Card">Card</option>
+                   </select>
+                 </div>
              </div>
 
              <div style={{ display: 'flex', gap: '0.75rem' }}>

@@ -42,7 +42,7 @@ const GroupsManager = () => {
   // Log Expense Form State
   const [expenseFormData, setExpenseFormData] = useState({
     amount: '',
-    category: 'Food',
+    category: '',
     description: '',
     paidBy: '',
     splitType: 'equal', // 'equal' or 'unequal'
@@ -223,7 +223,7 @@ const GroupsManager = () => {
       alert('Group expense logged successfully!');
       setExpenseFormData({
         amount: '',
-        category: 'Food',
+        category: '',
         description: '',
         paidBy: user?._id || '',
         splitType: 'equal',
@@ -800,9 +800,11 @@ const GroupsManager = () => {
                       <div style={{ flex: 1 }}>
                         <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
                         <select
+                          required
                           value={expenseFormData.category}
                           onChange={(e) => setExpenseFormData({ ...expenseFormData, category: e.target.value })}
                         >
+                          <option value="" disabled>Select Category</option>
                           {CATEGORIES.map((c) => (
                             <option key={c} value={c}>
                               {c}

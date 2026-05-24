@@ -11,12 +11,12 @@ const ExpensesManager = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     amount: '',
-    category: 'Food',
+    category: '',
     date: new Date().toISOString().split('T')[0],
     description: '',
     isRecurring: false,
     recurringFrequency: 'none',
-    paymentMode: 'Cash'
+    paymentMode: ''
   });
 
   const [editingExpense, setEditingExpense] = useState(null);
@@ -74,7 +74,7 @@ const ExpensesManager = () => {
     if (res.success) {
       setShowAddForm(false);
       setFormData({
-        amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'Cash'
+        amount: '', category: '', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: ''
       });
     } else {
       alert(res.error);
@@ -154,13 +154,15 @@ const ExpensesManager = () => {
             </div>
             <div>
               <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
-              <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+              <select required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                <option value="" disabled>Select Category</option>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
-              <select value={formData.paymentMode} onChange={(e) => setFormData({...formData, paymentMode: e.target.value})}>
+              <select required value={formData.paymentMode} onChange={(e) => setFormData({...formData, paymentMode: e.target.value})}>
+                <option value="" disabled>Select Payment Mode</option>
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI (Online)</option>
                 <option value="Card">Card (Online)</option>

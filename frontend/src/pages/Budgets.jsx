@@ -12,7 +12,7 @@ const Budgets = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   
   const [formData, setFormData] = useState({
-    category: 'Food',
+    category: '',
     amount: ''
   });
 
@@ -75,7 +75,8 @@ const Budgets = () => {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
               <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
-              <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+              <select required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                <option value="" disabled>Select Category</option>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
