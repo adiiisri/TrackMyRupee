@@ -12,6 +12,7 @@ export const GroupProvider = ({ children }) => {
   const [groups, setGroups] = useState([]);
   const [activeGroup, setActiveGroup] = useState(null);
   const [activeBalances, setActiveBalances] = useState(null);
+  const [activeExpenses, setActiveExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
@@ -28,14 +29,14 @@ export const GroupProvider = ({ children }) => {
     }
   }, [user]);
 
-  const selectGroup = async (group) => {
-    setActiveGroup(group);
-    if (group) {
-      await fetchGroupBalances(group._id);
-    } else {
-      setActiveBalances(null);
+  const fetchGroupExpenses = useCallback(async (groupId) => {
+    try {
+      const { data } = await api.get(`/groups/${groupId}/expenses`);
+      setActiveExpenses(data);
+    } catch (error) {
+      console.error('Error fetching group expenses:', error);
     }
-  };
+  }, []);
 
   const fetchGroupBalances = async (groupId) => {
     setLoading(true);
@@ -49,12 +50,43 @@ export const GroupProvider = ({ children }) => {
     }
   };
 
+  const selectGroup = async (group) => {
+    setActiveGroup(group);
+    if (group) {
+      await Promise.all([
+        fetchGroupBalances(group._id),
+        fetchGroupExpenses(group._id)
+      ]);
+    } else {
+      setActiveBalances(null);
+      setActiveExpenses([]);
+    }
+  };
+
   const createGroup = async (groupData) => {
     try {
       const { data } = await api.post('/groups', groupData);
       setGroups((prev) => [data, ...prev]);
       setActiveGroup(data);
-      await fetchGroupBalances(data._id);
+      await Promise.all([
+        fetchGroupBalances(data._id),
+        fetchGroupExpenses(data._id)
+      ]);
+      return { success: true, group: data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
+  const updateGroup = async (groupId, groupData) => {
+    try {
+      const { data } = await api.put(`/groups/${groupId}`, groupData);
+      setGroups((prev) => prev.map((g) => (g._id === groupId ? data : g)));
+      setActiveGroup(data);
+      await Promise.all([
+        fetchGroupBalances(groupId),
+        fetchGroupExpenses(groupId)
+      ]);
       return { success: true, group: data };
     } catch (error) {
       return { success: false, error: error.response?.data?.message || error.message };
@@ -64,8 +96,37 @@ export const GroupProvider = ({ children }) => {
   const logGroupExpense = async (groupId, expenseData) => {
     try {
       const { data } = await api.post(`/groups/${groupId}/expenses`, expenseData);
-      await fetchGroupBalances(groupId);
+      await Promise.all([
+        fetchGroupBalances(groupId),
+        fetchGroupExpenses(groupId)
+      ]);
       return { success: true, expense: data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
+  const updateGroupExpense = async (groupId, expenseId, expenseData) => {
+    try {
+      const { data } = await api.put(`/groups/${groupId}/expenses/${expenseId}`, expenseData);
+      await Promise.all([
+        fetchGroupBalances(groupId),
+        fetchGroupExpenses(groupId)
+      ]);
+      return { success: true, expense: data };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
+  const deleteGroupExpense = async (groupId, expenseId) => {
+    try {
+      await api.delete(`/groups/${groupId}/expenses/${expenseId}`);
+      await Promise.all([
+        fetchGroupBalances(groupId),
+        fetchGroupExpenses(groupId)
+      ]);
+      return { success: true };
     } catch (error) {
       return { success: false, error: error.response?.data?.message || error.message };
     }
@@ -75,13 +136,19 @@ export const GroupProvider = ({ children }) => {
     groups,
     activeGroup,
     activeBalances,
+    activeExpenses,
     loading,
     fetchGroups,
     selectGroup,
     fetchGroupBalances,
+    fetchGroupExpenses,
     createGroup,
+    updateGroup,
     logGroupExpense,
+    updateGroupExpense,
+    deleteGroupExpense,
   };
 
   return <GroupContext.Provider value={value}>{children}</GroupContext.Provider>;
 };
+

@@ -240,3 +240,203 @@ export const getGroupBalances = asyncHandler(async (req, res) => {
     suggestedSettlements: transactions
   });
 });
+
+// @desc    Update a group (name and members list)
+// @route   PUT /api/groups/:groupId
+// @access  Private
+export const updateGroup = asyncHandler(async (req, res) => {
+  const { name, members } = req.body;
+  const { groupId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error('Group not found');
+  }
+
+  // Only group creator can edit the group details/members
+  if (group.creator.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Unauthorized: Only the group creator can edit group details/members');
+  }
+
+  if (name) {
+    group.name = name.trim();
+  }
+
+  if (Array.isArray(members)) {
+    // Creator must be part of the group
+    const memberIds = new Set();
+    memberIds.add(group.creator.toString());
+
+    for (const member of members) {
+      if (typeof member === 'string') {
+        const trimmed = member.trim();
+        if (trimmed.includes('@')) {
+          let user = await User.findOne({ email: trimmed.toLowerCase() });
+          if (!user) {
+            // Auto-create a placeholder user for missing emails to ease adoption
+            user = await User.create({
+              name: trimmed.split('@')[0],
+              email: trimmed.toLowerCase(),
+              password: Math.random().toString(36).substring(2, 10),
+            });
+          }
+          memberIds.add(user._id.toString());
+        } else if (mongoose.Types.ObjectId.isValid(trimmed)) {
+          memberIds.add(trimmed);
+        }
+      } else if (member && member._id) {
+        memberIds.add(member._id.toString());
+      }
+    }
+
+    group.members = Array.from(memberIds);
+  }
+
+  const updatedGroup = await group.save();
+  const populatedGroup = await Group.findById(updatedGroup._id).populate('members', 'name email');
+  res.status(200).json(populatedGroup);
+});
+
+// @desc    Get all expenses logged in a group
+// @route   GET /api/groups/:groupId/expenses
+// @access  Private
+export const getGroupExpenses = asyncHandler(async (req, res) => {
+  const { groupId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error('Group not found');
+  }
+
+  const isMember = group.members.some(id => id.toString() === req.user._id.toString());
+  if (!isMember) {
+    res.status(403);
+    throw new Error('Unauthorized: You are not a member of this group');
+  }
+
+  const expenses = await Expense.find({ group: groupId })
+    .sort({ date: -1 })
+    .populate('paidBy', 'name email')
+    .populate('splits.user', 'name email');
+
+  res.status(200).json(expenses);
+});
+
+// @desc    Update a group expense amount or splits
+// @route   PUT /api/groups/:groupId/expenses/:expenseId
+// @access  Private
+export const updateGroupExpense = asyncHandler(async (req, res) => {
+  const { amount, category, description, paidBy, date, splits } = req.body;
+  const { groupId, expenseId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error('Group not found');
+  }
+
+  const expense = await Expense.findById(expenseId);
+  if (!expense) {
+    res.status(404);
+    throw new Error('Expense not found');
+  }
+
+  // Verify permissions: Only payer or logger can edit
+  const isAuthorized = expense.user.toString() === req.user._id.toString() || expense.paidBy.toString() === req.user._id.toString();
+  if (!isAuthorized) {
+    res.status(403);
+    throw new Error('Unauthorized to edit this expense');
+  }
+
+  // If amount, splits or paidBy are updated, validate they exist in group
+  const payerId = paidBy || expense.paidBy;
+  const isPayerMember = group.members.some(id => id.toString() === payerId.toString());
+  if (!isPayerMember) {
+    res.status(400);
+    throw new Error('PaidBy user must be a member of the group');
+  }
+
+  expense.paidBy = payerId;
+  expense.amount = amount !== undefined ? Number(amount) : expense.amount;
+  expense.category = category || expense.category;
+  expense.description = description !== undefined ? description.trim() : expense.description;
+  expense.date = date || expense.date;
+
+  if (splits && Array.isArray(splits) && splits.length > 0) {
+    // Unequal splits validation
+    let sum = 0;
+    const finalSplits = [];
+    for (const s of splits) {
+      const isSplitUserMember = group.members.some(id => id.toString() === s.user.toString());
+      if (!isSplitUserMember) {
+        res.status(400);
+        throw new Error(`User ${s.user} in splits is not a member of this group`);
+      }
+      sum += Number(s.amount);
+      finalSplits.push({
+        user: s.user,
+        amount: Number(s.amount)
+      });
+    }
+
+    if (Math.abs(sum - expense.amount) > 0.01) {
+      res.status(400);
+      throw new Error(`The sum of split amounts (${sum}) must equal the total expense amount (${expense.amount})`);
+    }
+
+    expense.splits = finalSplits;
+  } else if (amount !== undefined || splits) {
+    // Recalculate equal splits for updated amount
+    const numMembers = group.members.length;
+    const baseSplit = Math.floor((expense.amount / numMembers) * 100) / 100;
+    let totalAllocated = baseSplit * numMembers;
+    let difference = Number((expense.amount - totalAllocated).toFixed(2));
+
+    expense.splits = group.members.map((memberId, idx) => {
+      let memberSplit = baseSplit;
+      if (idx < Math.round(difference * 100)) {
+        memberSplit = Number((memberSplit + 0.01).toFixed(2));
+      }
+      return {
+        user: memberId,
+        amount: memberSplit
+      };
+    });
+  }
+
+  const updatedExpense = await expense.save();
+  res.status(200).json(updatedExpense);
+});
+
+// @desc    Delete a group expense
+// @route   DELETE /api/groups/:groupId/expenses/:expenseId
+// @access  Private
+export const deleteGroupExpense = asyncHandler(async (req, res) => {
+  const { groupId, expenseId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error('Group not found');
+  }
+
+  const expense = await Expense.findById(expenseId);
+  if (!expense) {
+    res.status(404);
+    throw new Error('Expense not found');
+  }
+
+  // Only payer or logger can delete
+  const isAuthorized = expense.user.toString() === req.user._id.toString() || expense.paidBy.toString() === req.user._id.toString();
+  if (!isAuthorized) {
+    res.status(403);
+    throw new Error('Unauthorized to delete this expense');
+  }
+
+  await Expense.deleteOne({ _id: expenseId });
+  res.status(200).json({ message: 'Group expense removed' });
+});
+

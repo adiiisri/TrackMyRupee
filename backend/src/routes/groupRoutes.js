@@ -1,19 +1,37 @@
 import express from 'express';
-import { createGroup, createGroupExpense, getGroupBalances } from '../controllers/groupController.js';
+import {
+  createGroup,
+  updateGroup,
+  createGroupExpense,
+  getGroupExpenses,
+  updateGroupExpense,
+  deleteGroupExpense,
+  getGroupBalances
+} from '../controllers/groupController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Define group creation route
+// Define group creation and editing route
 router.route('/')
   .post(protect, createGroup);
 
-// Define group expense posting route
+router.route('/:groupId')
+  .put(protect, updateGroup);
+
+// Define group expense posting and list route
 router.route('/:groupId/expenses')
+  .get(protect, getGroupExpenses)
   .post(protect, createGroupExpense);
+
+// Define group expense edit and delete route
+router.route('/:groupId/expenses/:expenseId')
+  .put(protect, updateGroupExpense)
+  .delete(protect, deleteGroupExpense);
 
 // Define group balance and suggested transactions settlement route
 router.route('/:groupId/balances')
   .get(protect, getGroupBalances);
 
 export default router;
+
