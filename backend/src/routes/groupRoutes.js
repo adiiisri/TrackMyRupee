@@ -3,6 +3,7 @@ import {
   createGroup,
   getGroups,
   updateGroup,
+  deleteGroup,
   createGroupExpense,
   getGroupExpenses,
   updateGroupExpense,
@@ -19,7 +20,8 @@ router.route('/')
   .post(protect, createGroup);
 
 router.route('/:groupId')
-  .put(protect, updateGroup);
+  .put(protect, updateGroup)
+  .delete(protect, deleteGroup);
 
 // Define group expense posting and list route
 router.route('/:groupId/expenses')

@@ -93,6 +93,21 @@ export const GroupProvider = ({ children }) => {
     }
   };
 
+  const deleteGroup = async (groupId) => {
+    try {
+      await api.delete(`/groups/${groupId}`);
+      setGroups((prev) => prev.filter((g) => g._id !== groupId));
+      if (activeGroup?._id === groupId) {
+        setActiveGroup(null);
+        setActiveBalances(null);
+        setActiveExpenses([]);
+      }
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  };
+
   const logGroupExpense = async (groupId, expenseData) => {
     try {
       const { data } = await api.post(`/groups/${groupId}/expenses`, expenseData);
@@ -144,6 +159,7 @@ export const GroupProvider = ({ children }) => {
     fetchGroupExpenses,
     createGroup,
     updateGroup,
+    deleteGroup,
     logGroupExpense,
     updateGroupExpense,
     deleteGroupExpense,

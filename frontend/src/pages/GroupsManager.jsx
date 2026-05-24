@@ -17,6 +17,7 @@ const GroupsManager = () => {
     selectGroup,
     createGroup,
     updateGroup,
+    deleteGroup,
     logGroupExpense,
     updateGroupExpense,
     deleteGroupExpense,
@@ -164,6 +165,20 @@ const GroupsManager = () => {
       setIsEditingGroup(false);
     } else {
       alert(res.error || 'Failed to update group members');
+    }
+  };
+
+  const handleDeleteGroup = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the group "${activeGroup.name}"? This will permanently delete all logged expenses and balance standings. This action CANNOT be undone.`
+    );
+    if (!confirmDelete) return;
+
+    const res = await deleteGroup(activeGroup._id);
+    if (res.success) {
+      alert('Group circle deleted successfully!');
+    } else {
+      alert(res.error || 'Failed to delete group circle');
     }
   };
 
@@ -641,6 +656,29 @@ const GroupsManager = () => {
                           Cancel
                         </button>
                       </div>
+
+                      {activeGroup.creator === user?._id && (
+                        <button
+                          type="button"
+                          onClick={handleDeleteGroup}
+                          className="btn"
+                          style={{
+                            backgroundColor: 'var(--danger-light)',
+                            color: 'var(--danger)',
+                            border: '1px solid var(--danger)',
+                            padding: '0.5rem',
+                            fontSize: '0.875rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.25rem',
+                            marginTop: '0.5rem',
+                            width: '100%',
+                          }}
+                        >
+                          <Trash2 size={16} /> Delete Group Circle
+                        </button>
+                      )}
                     </form>
                   </motion.div>
                 )}

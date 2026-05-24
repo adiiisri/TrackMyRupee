@@ -452,3 +452,31 @@ export const deleteGroupExpense = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Group expense removed' });
 });
 
+// @desc    Delete a group and all its expenses
+// @route   DELETE /api/groups/:groupId
+// @access  Private
+export const deleteGroup = asyncHandler(async (req, res) => {
+  const { groupId } = req.params;
+
+  const group = await Group.findById(groupId);
+  if (!group) {
+    res.status(404);
+    throw new Error('Group not found');
+  }
+
+  // Only creator can delete the entire group circle
+  if (group.creator.toString() !== req.user._id.toString()) {
+    res.status(403);
+    throw new Error('Unauthorized: Only the group creator can delete this group circle');
+  }
+
+  // Delete all expenses of this group
+  await Expense.deleteMany({ group: groupId });
+
+  // Delete the group itself
+  await Group.deleteOne({ _id: groupId });
+
+  res.status(200).json({ message: 'Group circle and associated expenses deleted successfully' });
+});
+
+
