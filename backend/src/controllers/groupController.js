@@ -277,9 +277,7 @@ export const updateGroup = asyncHandler(async (req, res) => {
   }
 
   if (Array.isArray(members)) {
-    // Creator must be part of the group
     const memberIds = new Set();
-    memberIds.add(group.creator.toString());
 
     for (const member of members) {
       if (typeof member === 'string') {

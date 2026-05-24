@@ -142,18 +142,15 @@ const GroupsManager = () => {
   };
 
   const handleRemoveEditMember = (identifier) => {
-    // Cannot remove group creator
-    const creatorMember = activeGroup.members.find(m => m._id === activeGroup.creator);
-    const isCreator = identifier === activeGroup.creator || (creatorMember && (identifier === creatorMember.email || identifier === creatorMember._id));
-    if (isCreator) {
-      return alert('Group creator cannot be removed from the circle');
-    }
     setEditGroupMembers((prev) => prev.filter((m) => m !== identifier && m !== identifier._id));
   };
 
   const handleUpdateGroupSubmit = async (e) => {
     e.preventDefault();
     if (!editGroupName.trim()) return alert('Group name is required');
+    if (editGroupMembers.length === 0) {
+      return alert('At least one group member is required to save changes.');
+    }
 
     const res = await updateGroup(activeGroup._id, {
       name: editGroupName.trim(),
@@ -473,7 +470,11 @@ const GroupsManager = () => {
                         {group.name}
                       </h4>
                       <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                        {group.members.length} members • Created by {group.creator === user?._id ? 'You' : 'Friend'}
+                        {group.members.length} members • Created by {
+                        (group.creator === user?._id || group.members.some(m => m.email === user?.email && m._id === group.creator))
+                          ? 'You'
+                          : 'Friend'
+                      }
                       </p>
                     </div>
                     <button
@@ -669,15 +670,13 @@ const GroupsManager = () => {
                                 }}
                               >
                                 {m.name || m.email || m}
-                                {!isCreator && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveEditMember(m)}
-                                    style={{ color: 'var(--danger)', display: 'inline-flex', padding: 0, fontSize: '0.75rem' }}
-                                  >
-                                    ×
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveEditMember(m)}
+                                  style={{ color: isCreator ? 'var(--text-secondary)' : 'var(--danger)', display: 'inline-flex', padding: 0, fontSize: '0.75rem' }}
+                                >
+                                  ×
+                                </button>
                               </span>
                             );
                           })}
