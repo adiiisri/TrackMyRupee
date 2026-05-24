@@ -38,3 +38,13 @@ Thumbs.db
 ad.md
 Flow.md
 colour.md
+
+# Additional sensitive and generated files
+.next/
+target/
+__pycache__/
+venv/
+*.db
+*.sqlite
+*.pem
+*.key
