@@ -15,7 +15,8 @@ const IncomesManager = () => {
     date: new Date().toISOString().split('T')[0],
     description: '',
     isRecurring: false,
-    recurringFrequency: 'none'
+    recurringFrequency: 'none',
+    paymentMode: 'UPI'
   });
 
   const [editingIncome, setEditingIncome] = useState(null);
@@ -25,7 +26,8 @@ const IncomesManager = () => {
     date: '',
     description: '',
     isRecurring: false,
-    recurringFrequency: 'none'
+    recurringFrequency: 'none',
+    paymentMode: 'UPI'
   });
 
   const handleEditClick = (income) => {
@@ -36,7 +38,8 @@ const IncomesManager = () => {
       date: new Date(income.date).toISOString().split('T')[0],
       description: income.description,
       isRecurring: income.isRecurring || false,
-      recurringFrequency: income.recurringFrequency || 'none'
+      recurringFrequency: income.recurringFrequency || 'none',
+      paymentMode: income.paymentMode || 'UPI'
     });
   };
 
@@ -71,7 +74,7 @@ const IncomesManager = () => {
     if (res.success) {
       setShowAddForm(false);
       setFormData({
-        amount: '', source: 'Salary', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none'
+        amount: '', source: 'Salary', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'UPI'
       });
     } else {
       alert(res.error);
@@ -156,6 +159,14 @@ const IncomesManager = () => {
               </select>
             </div>
             <div>
+              <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
+              <select value={formData.paymentMode} onChange={(e) => setFormData({...formData, paymentMode: e.target.value})}>
+                <option value="UPI">UPI (Online)</option>
+                <option value="Card">Card (Online)</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+            <div>
               <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
               <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
             </div>
@@ -213,6 +224,7 @@ const IncomesManager = () => {
                   <th style={{ padding: '1rem' }}>Date</th>
                   <th style={{ padding: '1rem' }}>Description</th>
                   <th style={{ padding: '1rem' }}>Source</th>
+                  <th style={{ padding: '1rem' }}>Payment Mode</th>
                   <th style={{ padding: '1rem' }}>Amount</th>
                   <th style={{ padding: '1rem' }}>Recurring</th>
                   <th style={{ padding: '1rem' }}>Actions</th>
@@ -221,7 +233,7 @@ const IncomesManager = () => {
               <motion.tbody variants={tableVariants} initial="hidden" animate="show">
                 {incomes.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No incomes logged yet.</td>
+                    <td colSpan={7} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No incomes logged yet.</td>
                   </tr>
                 ) : (
                   incomes.map(income => (
@@ -231,6 +243,18 @@ const IncomesManager = () => {
                       <td style={{ padding: '1rem' }}>
                         <span style={{ padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-tertiary)', fontSize: '0.75rem', fontWeight: 500 }}>
                           {income.source}
+                        </span>
+                      </td>
+                      <td style={{ padding: '1rem' }}>
+                        <span style={{ 
+                          padding: '0.25rem 0.5rem', 
+                          borderRadius: 'var(--radius-sm)', 
+                          backgroundColor: income.paymentMode === 'Cash' ? 'var(--warning-light)' : 'var(--accent-light)', 
+                          color: income.paymentMode === 'Cash' ? 'var(--warning)' : 'var(--accent-hover)', 
+                          fontSize: '0.75rem', 
+                          fontWeight: 600 
+                        }}>
+                          {income.paymentMode || 'UPI'}
                         </span>
                       </td>
                       <td style={{ padding: '1rem', color: 'var(--success)', fontWeight: 600 }}>+₹{income.amount.toLocaleString()}</td>
@@ -269,10 +293,20 @@ const IncomesManager = () => {
                     <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Amount (₹)</label>
                     <input type="number" required value={editFormData.amount} onChange={(e) => setEditFormData({...editFormData, amount: e.target.value})} />
                   </div>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Source</label>
                     <select value={editFormData.source} onChange={(e) => setEditFormData({...editFormData, source: e.target.value})}>
                       {SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
+                    <select value={editFormData.paymentMode} onChange={(e) => setEditFormData({...editFormData, paymentMode: e.target.value})}>
+                      <option value="UPI">UPI (Online)</option>
+                      <option value="Card">Card (Online)</option>
+                      <option value="Cash">Cash</option>
                     </select>
                   </div>
                 </div>

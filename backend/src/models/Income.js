@@ -23,6 +23,11 @@ const incomeSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    paymentMode: {
+      type: String,
+      enum: ['Cash', 'UPI', 'Card'],
+      default: 'UPI',
+    },
     isRecurring: {
       type: Boolean,
       default: false,

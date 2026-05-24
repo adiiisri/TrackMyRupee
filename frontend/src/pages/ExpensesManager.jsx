@@ -15,7 +15,8 @@ const ExpensesManager = () => {
     date: new Date().toISOString().split('T')[0],
     description: '',
     isRecurring: false,
-    recurringFrequency: 'none'
+    recurringFrequency: 'none',
+    paymentMode: 'Cash'
   });
 
   const [editingExpense, setEditingExpense] = useState(null);
@@ -25,7 +26,8 @@ const ExpensesManager = () => {
     date: '',
     description: '',
     isRecurring: false,
-    recurringFrequency: 'none'
+    recurringFrequency: 'none',
+    paymentMode: 'Cash'
   });
 
   const handleEditClick = (expense) => {
@@ -36,7 +38,8 @@ const ExpensesManager = () => {
       date: new Date(expense.date).toISOString().split('T')[0],
       description: expense.description,
       isRecurring: expense.isRecurring || false,
-      recurringFrequency: expense.recurringFrequency || 'none'
+      recurringFrequency: expense.recurringFrequency || 'none',
+      paymentMode: expense.paymentMode || 'Cash'
     });
   };
 
@@ -71,7 +74,7 @@ const ExpensesManager = () => {
     if (res.success) {
       setShowAddForm(false);
       setFormData({
-        amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none'
+        amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'Cash'
       });
     } else {
       alert(res.error);
@@ -156,6 +159,14 @@ const ExpensesManager = () => {
               </select>
             </div>
             <div>
+              <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
+              <select value={formData.paymentMode} onChange={(e) => setFormData({...formData, paymentMode: e.target.value})}>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI (Online)</option>
+                <option value="Card">Card (Online)</option>
+              </select>
+            </div>
+            <div>
               <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
               <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
             </div>
@@ -213,6 +224,7 @@ const ExpensesManager = () => {
                   <th style={{ padding: '1rem' }}>Date</th>
                   <th style={{ padding: '1rem' }}>Description</th>
                   <th style={{ padding: '1rem' }}>Category</th>
+                  <th style={{ padding: '1rem' }}>Payment Mode</th>
                   <th style={{ padding: '1rem' }}>Amount</th>
                   <th style={{ padding: '1rem' }}>Recurring</th>
                   <th style={{ padding: '1rem' }}>Actions</th>
@@ -221,7 +233,7 @@ const ExpensesManager = () => {
               <motion.tbody variants={tableVariants} initial="hidden" animate="show">
                 {expenses.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No expenses found.</td>
+                    <td colSpan={7} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No expenses found.</td>
                   </tr>
                 ) : (
                   expenses.map(expense => (
@@ -231,6 +243,18 @@ const ExpensesManager = () => {
                       <td style={{ padding: '1rem' }}>
                         <span style={{ padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-tertiary)', fontSize: '0.75rem', fontWeight: 500 }}>
                           {expense.category}
+                        </span>
+                      </td>
+                      <td style={{ padding: '1rem' }}>
+                        <span style={{ 
+                          padding: '0.25rem 0.5rem', 
+                          borderRadius: 'var(--radius-sm)', 
+                          backgroundColor: expense.paymentMode === 'Cash' ? 'var(--warning-light)' : 'var(--accent-light)', 
+                          color: expense.paymentMode === 'Cash' ? 'var(--warning)' : 'var(--accent-hover)', 
+                          fontSize: '0.75rem', 
+                          fontWeight: 600 
+                        }}>
+                          {expense.paymentMode || 'Cash'}
                         </span>
                       </td>
                       <td style={{ padding: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>₹{expense.amount.toLocaleString()}</td>
@@ -269,10 +293,20 @@ const ExpensesManager = () => {
                     <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Amount (₹)</label>
                     <input type="number" required value={editFormData.amount} onChange={(e) => setEditFormData({...editFormData, amount: e.target.value})} />
                   </div>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Category</label>
                     <select value={editFormData.category} onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}>
                       {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
+                    <select value={editFormData.paymentMode} onChange={(e) => setEditFormData({...editFormData, paymentMode: e.target.value})}>
+                      <option value="Cash">Cash</option>
+                      <option value="UPI">UPI (Online)</option>
+                      <option value="Card">Card (Online)</option>
                     </select>
                   </div>
                 </div>

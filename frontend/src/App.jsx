@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
   
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
-    amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none'
+    amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'Cash'
   });
 
   const handleGlobalAddSubmit = async (e) => {
@@ -38,7 +38,7 @@ const Layout = ({ children }) => {
     const res = await addExpense({ ...formData, amount: Number(formData.amount) });
     if (res.success) {
       setShowAddModal(false);
-      setFormData({ amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none' });
+      setFormData({ amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'Cash' });
     } else {
       alert(res.error);
     }
@@ -117,9 +117,19 @@ const Layout = ({ children }) => {
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
-                  <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Payment Mode</label>
+                    <select value={formData.paymentMode || 'Cash'} onChange={(e) => setFormData({...formData, paymentMode: e.target.value})}>
+                      <option value="Cash">Cash</option>
+                      <option value="UPI">UPI (Online)</option>
+                      <option value="Card">Card (Online)</option>
+                    </select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Date</label>
+                    <input type="date" required value={formData.date} onChange={(e) => setFormData({...formData, date: e.target.value})} />
+                  </div>
                 </div>
                 <div>
                   <label style={{ fontSize: '0.875rem', fontWeight: 500 }}>Description</label>

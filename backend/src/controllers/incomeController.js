@@ -32,7 +32,7 @@ export const getIncomes = asyncHandler(async (req, res) => {
 // @route   POST /api/incomes
 // @access  Private
 export const createIncome = asyncHandler(async (req, res) => {
-  const { amount, source, date, description, isRecurring, recurringFrequency } = req.body;
+  const { amount, source, date, description, isRecurring, recurringFrequency, paymentMode } = req.body;
 
   const income = new Income({
     user: req.user._id,
@@ -40,6 +40,7 @@ export const createIncome = asyncHandler(async (req, res) => {
     source,
     date: date || Date.now(),
     description,
+    paymentMode: paymentMode || 'UPI',
     isRecurring: isRecurring || false,
     recurringFrequency: recurringFrequency || 'none',
     lastGeneratedDate: isRecurring ? Date.now() : null
@@ -68,7 +69,7 @@ export const deleteIncome = asyncHandler(async (req, res) => {
 // @route   PUT /api/incomes/:id
 // @access  Private
 export const updateIncome = asyncHandler(async (req, res) => {
-  const { amount, source, date, description, isRecurring, recurringFrequency } = req.body;
+  const { amount, source, date, description, isRecurring, recurringFrequency, paymentMode } = req.body;
 
   const income = await Income.findById(req.params.id);
 
@@ -77,6 +78,7 @@ export const updateIncome = asyncHandler(async (req, res) => {
     income.source = source || income.source;
     income.date = date || income.date;
     income.description = description || income.description;
+    income.paymentMode = paymentMode || income.paymentMode;
     income.isRecurring = isRecurring !== undefined ? isRecurring : income.isRecurring;
     income.recurringFrequency = recurringFrequency || income.recurringFrequency;
 

@@ -20,7 +20,8 @@ const Dashboard = () => {
     date: new Date().toISOString().split('T')[0],
     description: '',
     isRecurring: false,
-    recurringFrequency: 'none'
+    recurringFrequency: 'none',
+    paymentMode: 'Cash'
   });
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -46,7 +47,8 @@ const Dashboard = () => {
           date: new Date().toISOString().split('T')[0],
           description: '',
           isRecurring: false,
-          recurringFrequency: 'none'
+          recurringFrequency: 'none',
+          paymentMode: 'Cash'
         });
 
         // Re-fetch budgets for the month so budget pace stays calibrated
@@ -75,7 +77,33 @@ const Dashboard = () => {
   const totalIncome = useMemo(() => incomes.reduce((acc, curr) => acc + curr.amount, 0), [incomes]);
   const totalBudget = useMemo(() => budgets.reduce((acc, curr) => acc + curr.amount, 0), [budgets]);
   
+  // Account vs Cash Income
+  const totalIncomeAccount = useMemo(() => 
+    incomes.filter(i => i.paymentMode === 'UPI' || i.paymentMode === 'Card' || !i.paymentMode)
+           .reduce((acc, curr) => acc + curr.amount, 0), 
+    [incomes]
+  );
+  const totalIncomeCash = useMemo(() => 
+    incomes.filter(i => i.paymentMode === 'Cash')
+           .reduce((acc, curr) => acc + curr.amount, 0), 
+    [incomes]
+  );
+
+  // Account vs Cash Expenses
+  const totalExpensesAccount = useMemo(() => 
+    expenses.filter(e => e.paymentMode === 'UPI' || e.paymentMode === 'Card')
+            .reduce((acc, curr) => acc + curr.amount, 0), 
+    [expenses]
+  );
+  const totalExpensesCash = useMemo(() => 
+    expenses.filter(e => e.paymentMode === 'Cash' || !e.paymentMode)
+            .reduce((acc, curr) => acc + curr.amount, 0), 
+    [expenses]
+  );
+  
   const availableBalance = totalIncome - totalExpenses;
+  const accountBalance = totalIncomeAccount - totalExpensesAccount;
+  const cashBalance = totalIncomeCash - totalExpensesCash;
   
   const budgetStatus = totalBudget - totalExpenses;
   const isUnderBudget = budgetStatus >= 0;
@@ -117,18 +145,79 @@ const Dashboard = () => {
   return (
     <motion.div className="container" variants={containerVariants} initial="hidden" animate="show" style={{ maxWidth: '1400px' }}>
       
-      {/* Top Banner: Available Balance */}
-      <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-secondary)', borderLeft: '6px solid var(--accent-primary)' }}>
-        <div>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Available Balance</p>
-          <h2 style={{ fontSize: '2.5rem', fontWeight: 700, margin: '0.25rem 0', color: availableBalance >= 0 ? 'var(--text-primary)' : 'var(--danger)' }}>
+      {/* Balances Section Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
+        
+        {/* Account Balance (UPI / Card) Card */}
+        <motion.div 
+          variants={itemVariants} 
+          className="card" 
+          style={{ 
+            padding: '1.75rem', 
+            background: 'var(--bg-secondary)', 
+            borderLeft: '6px solid var(--accent-primary)',
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+            Account Balance (UPI / Card)
+          </p>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0.5rem 0', color: 'var(--accent-hover)' }}>
+            ₹{accountBalance.toLocaleString()}
+          </h2>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            Online Income: <span style={{ color: 'var(--success)', fontWeight: 600 }}>+₹{totalIncomeAccount.toLocaleString()}</span> <br />
+            Online Spends: <span style={{ color: 'var(--danger)', fontWeight: 600 }}>-₹{totalExpensesAccount.toLocaleString()}</span>
+          </p>
+        </motion.div>
+
+        {/* Cash Balance Card */}
+        <motion.div 
+          variants={itemVariants} 
+          className="card" 
+          style={{ 
+            padding: '1.75rem', 
+            background: 'var(--bg-secondary)', 
+            borderLeft: '6px solid var(--warning)',
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+            Cash in Hand
+          </p>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0.5rem 0', color: 'var(--warning)' }}>
+            ₹{cashBalance.toLocaleString()}
+          </h2>
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            Cash Income: <span style={{ color: 'var(--success)', fontWeight: 600 }}>+₹{totalIncomeCash.toLocaleString()}</span> <br />
+            Cash Spends: <span style={{ color: 'var(--danger)', fontWeight: 600 }}>-₹{totalExpensesCash.toLocaleString()}</span>
+          </p>
+        </motion.div>
+
+        {/* Total Available Balance Card */}
+        <motion.div 
+          variants={itemVariants} 
+          className="card" 
+          style={{ 
+            padding: '1.75rem', 
+            background: 'var(--bg-secondary)', 
+            borderLeft: '6px solid #64748b',
+            boxShadow: 'var(--shadow-sm)'
+          }}
+        >
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+            Total Net Balance
+          </p>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, margin: '0.5rem 0', color: availableBalance >= 0 ? 'var(--text-primary)' : 'var(--danger)' }}>
             ₹{availableBalance.toLocaleString()}
           </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-            <span style={{ color: 'var(--success)' }}>+₹{totalIncome.toLocaleString()}</span> Income &nbsp; | &nbsp; <span style={{ color: 'var(--danger)' }}>-₹{totalExpenses.toLocaleString()}</span> Expenses
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+            Total Income: <span style={{ color: 'var(--success)', fontWeight: 600 }}>+₹{totalIncome.toLocaleString()}</span> <br />
+            Total Spends: <span style={{ color: 'var(--danger)', fontWeight: 600 }}>-₹{totalExpenses.toLocaleString()}</span>
           </p>
-        </div>
-      </motion.div>
+        </motion.div>
+
+      </div>
 
       {/* Top Row: 3 Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
@@ -235,7 +324,7 @@ const Dashboard = () => {
            <form onSubmit={handleQuickSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1, justifyContent: 'center' }}>
              <div style={{ display: 'flex', gap: '0.75rem' }}>
                <div style={{ flex: 1 }}>
-                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Amount (₹)</label>
+                 <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Amount (₹)</label>
                  <div style={{ position: 'relative' }}>
                    <span style={{ position: 'absolute', left: '0.5rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 500 }}>₹</span>
                    <input
@@ -258,6 +347,18 @@ const Dashboard = () => {
                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                  </select>
                </div>
+               <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Mode</label>
+                  <select
+                    value={quickExpense.paymentMode || 'Cash'}
+                    onChange={(e) => setQuickExpense({ ...quickExpense, paymentMode: e.target.value })}
+                    style={{ height: '36px', fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                  >
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                  </select>
+                </div>
              </div>
 
              <div style={{ display: 'flex', gap: '0.75rem' }}>

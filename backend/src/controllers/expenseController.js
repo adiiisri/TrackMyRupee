@@ -32,7 +32,7 @@ export const getExpenses = asyncHandler(async (req, res) => {
 // @route   POST /api/expenses
 // @access  Private
 export const createExpense = asyncHandler(async (req, res) => {
-  const { amount, category, date, description, isRecurring, recurringFrequency } = req.body;
+  const { amount, category, date, description, isRecurring, recurringFrequency, paymentMode } = req.body;
 
   const expense = new Expense({
     user: req.user._id,
@@ -40,6 +40,7 @@ export const createExpense = asyncHandler(async (req, res) => {
     category,
     date: date || Date.now(),
     description,
+    paymentMode: paymentMode || 'Cash',
     isRecurring: isRecurring || false,
     recurringFrequency: recurringFrequency || 'none',
     lastGeneratedDate: isRecurring ? Date.now() : null
@@ -53,7 +54,7 @@ export const createExpense = asyncHandler(async (req, res) => {
 // @route   PUT /api/expenses/:id
 // @access  Private
 export const updateExpense = asyncHandler(async (req, res) => {
-  const { amount, category, date, description, isRecurring, recurringFrequency } = req.body;
+  const { amount, category, date, description, isRecurring, recurringFrequency, paymentMode } = req.body;
 
   const expense = await Expense.findById(req.params.id);
 
@@ -62,6 +63,7 @@ export const updateExpense = asyncHandler(async (req, res) => {
     expense.category = category || expense.category;
     expense.date = date || expense.date;
     expense.description = description || expense.description;
+    expense.paymentMode = paymentMode || expense.paymentMode;
     expense.isRecurring = isRecurring !== undefined ? isRecurring : expense.isRecurring;
     expense.recurringFrequency = recurringFrequency || expense.recurringFrequency;
 
