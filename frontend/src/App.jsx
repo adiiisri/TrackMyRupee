@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, User, PlusCircle, Activity, Moon, Sun, X, Menu, Shield, Laptop, Palmtree } from 'lucide-react';
+import { User, PlusCircle, Activity, Moon, Sun, X, Menu, Shield, Laptop, Palmtree } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { ExpenseProvider, useExpense } from './context/ExpenseContext';
 import { GoalProvider } from './context/GoalContext';
@@ -89,10 +89,6 @@ const Layout = ({ children }) => {
             <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
               {theme === 'light' ? <Moon size={16} color="var(--text-secondary)" /> : <Sun size={16} color="var(--warning)" />}
             </button>
-            <div style={{ position: 'relative', cursor: 'pointer' }}>
-               <Bell size={20} color="var(--text-secondary)" />
-               <div style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, backgroundColor: 'var(--danger)', borderRadius: '50%' }} />
-            </div>
             <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
               <User size={16} color="var(--text-secondary)" />
             </button>
