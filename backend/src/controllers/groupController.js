@@ -36,6 +36,18 @@ export const createGroup = asyncHandler(async (req, res) => {
           memberIds.add(user._id.toString());
         } else if (mongoose.Types.ObjectId.isValid(trimmed)) {
           memberIds.add(trimmed);
+        } else if (trimmed.length > 0) {
+          // Plain name!
+          let user = await User.findOne({ name: trimmed });
+          if (!user) {
+            const randomSuffix = Math.random().toString(36).substring(2, 8);
+            user = await User.create({
+              name: trimmed,
+              email: `${trimmed.toLowerCase().replace(/[^a-z0-9]/g, '')}_${randomSuffix}@trackmyrupee.local`,
+              password: Math.random().toString(36).substring(2, 10),
+            });
+          }
+          memberIds.add(user._id.toString());
         }
       }
     }
@@ -278,6 +290,7 @@ export const updateGroup = asyncHandler(async (req, res) => {
 
   if (Array.isArray(members)) {
     const memberIds = new Set();
+    memberIds.add(group.creator.toString()); // safeguard creator
 
     for (const member of members) {
       if (typeof member === 'string') {
@@ -295,6 +308,18 @@ export const updateGroup = asyncHandler(async (req, res) => {
           memberIds.add(user._id.toString());
         } else if (mongoose.Types.ObjectId.isValid(trimmed)) {
           memberIds.add(trimmed);
+        } else if (trimmed.length > 0) {
+          // Plain name!
+          let user = await User.findOne({ name: trimmed });
+          if (!user) {
+            const randomSuffix = Math.random().toString(36).substring(2, 8);
+            user = await User.create({
+              name: trimmed,
+              email: `${trimmed.toLowerCase().replace(/[^a-z0-9]/g, '')}_${randomSuffix}@trackmyrupee.local`,
+              password: Math.random().toString(36).substring(2, 10),
+            });
+          }
+          memberIds.add(user._id.toString());
         }
       } else if (member && member._id) {
         memberIds.add(member._id.toString());

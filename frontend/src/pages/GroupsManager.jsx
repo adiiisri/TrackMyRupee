@@ -89,11 +89,14 @@ const GroupsManager = () => {
   // Member invites (Create Group)
   const handleAddMemberEmail = (e) => {
     e.preventDefault();
-    const trimmed = memberEmailInput.trim().toLowerCase();
+    const rawInput = memberEmailInput.trim();
+    const trimmed = rawInput.includes('@') ? rawInput.toLowerCase() : rawInput;
     if (!trimmed) return;
-    if (!trimmed.includes('@')) return alert('Please enter a valid email address');
-    if (invitedMembers.includes(trimmed)) return alert('This email is already added');
-    if (trimmed === user?.email) return alert('You are already included automatically as the creator');
+    if (trimmed.length < 2) return alert('Name or email must be at least 2 characters long');
+    if (invitedMembers.includes(trimmed)) return alert('This member is already added');
+    if (trimmed.toLowerCase() === user?.email?.toLowerCase() || trimmed.toLowerCase() === user?.name?.toLowerCase()) {
+      return alert('You are already included automatically as the creator');
+    }
 
     setInvitedMembers((prev) => [...prev, trimmed]);
     setMemberEmailInput('');
@@ -125,17 +128,18 @@ const GroupsManager = () => {
   const handleStartEditGroup = () => {
     if (!activeGroup) return;
     setEditGroupName(activeGroup.name);
-    // Initialize with current group member email/ids
-    setEditGroupMembers(activeGroup.members.map(m => m.email || m._id));
+    // Initialize with current group member names or emails
+    setEditGroupMembers(activeGroup.members.map(m => m.email && m.email.includes('@trackmyrupee.local') ? m.name : m.email || m._id));
     setIsEditingGroup(true);
   };
 
   const handleAddEditMemberEmail = (e) => {
     e.preventDefault();
-    const trimmed = editMemberEmailInput.trim().toLowerCase();
+    const rawInput = editMemberEmailInput.trim();
+    const trimmed = rawInput.includes('@') ? rawInput.toLowerCase() : rawInput;
     if (!trimmed) return;
-    if (!trimmed.includes('@')) return alert('Please enter a valid email address');
-    if (editGroupMembers.includes(trimmed)) return alert('This email is already added');
+    if (trimmed.length < 2) return alert('Name or email must be at least 2 characters long');
+    if (editGroupMembers.includes(trimmed)) return alert('This member is already added');
 
     setEditGroupMembers((prev) => [...prev, trimmed]);
     setEditMemberEmailInput('');
@@ -381,11 +385,11 @@ const GroupsManager = () => {
             </div>
 
             <div>
-              <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Invite Members (by email)</label>
+              <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Invite Members (by name or email)</label>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
                 <input
-                  type="email"
-                  placeholder="friend@example.com"
+                  type="text"
+                  placeholder="e.g. Rahul, amit@example.com"
                   value={memberEmailInput}
                   onChange={(e) => setMemberEmailInput(e.target.value)}
                 />
@@ -632,11 +636,11 @@ const GroupsManager = () => {
                       </div>
 
                       <div>
-                        <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Invite New Member</label>
+                        <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Invite New Member (name or email)</label>
                         <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
                           <input
-                            type="email"
-                            placeholder="newfriend@example.com"
+                            type="text"
+                            placeholder="e.g. Rahul, newfriend@example.com"
                             value={editMemberEmailInput}
                             onChange={(e) => setEditMemberEmailInput(e.target.value)}
                             style={{ padding: '0.5rem', fontSize: '0.875rem' }}
