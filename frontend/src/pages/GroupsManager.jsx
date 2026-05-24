@@ -476,29 +476,27 @@ const GroupsManager = () => {
                         {group.members.length} members • Created by {group.creator === user?._id ? 'You' : 'Friend'}
                       </p>
                     </div>
-                    {group.creator === user?._id && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteGroup(group);
-                        }}
-                        title="Delete Group Circle"
-                        style={{
-                          position: 'absolute',
-                          right: '1rem',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          color: 'var(--danger)',
-                          padding: '0.25rem',
-                          display: 'inline-flex',
-                          background: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteGroup(group);
+                      }}
+                      title="Delete Group Circle"
+                      style={{
+                        position: 'absolute',
+                        right: '1rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        color: 'var(--danger)',
+                        padding: '0.25rem',
+                        display: 'inline-flex',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </motion.div>
                 );
               })}
@@ -567,15 +565,13 @@ const GroupsManager = () => {
                     >
                       <Settings size={20} />
                     </button>
-                    {activeGroup.creator === user?._id && (
-                      <button
-                        onClick={() => handleDeleteGroup(activeGroup)}
-                        title="Delete Group Circle"
-                        style={{ color: 'var(--danger)', padding: '0.25rem', display: 'inline-flex' }}
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleDeleteGroup(activeGroup)}
+                      title="Delete Group Circle"
+                      style={{ color: 'var(--danger)', padding: '0.25rem', display: 'inline-flex' }}
+                    >
+                      <Trash2 size={20} />
+                    </button>
                   </div>
                 </div>
 
@@ -697,28 +693,26 @@ const GroupsManager = () => {
                         </button>
                       </div>
 
-                      {activeGroup.creator === user?._id && (
-                        <button
-                          type="button"
-                          onClick={handleDeleteGroup}
-                          className="btn"
-                          style={{
-                            backgroundColor: 'var(--danger-light)',
-                            color: 'var(--danger)',
-                            border: '1px solid var(--danger)',
-                            padding: '0.5rem',
-                            fontSize: '0.875rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.25rem',
-                            marginTop: '0.5rem',
-                            width: '100%',
-                          }}
-                        >
-                          <Trash2 size={16} /> Delete Group Circle
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={handleDeleteGroup}
+                        className="btn"
+                        style={{
+                          backgroundColor: 'var(--danger-light)',
+                          color: 'var(--danger)',
+                          border: '1px solid var(--danger)',
+                          padding: '0.5rem',
+                          fontSize: '0.875rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.25rem',
+                          marginTop: '0.5rem',
+                          width: '100%',
+                        }}
+                      >
+                        <Trash2 size={16} /> Delete Group Circle
+                      </button>
                     </form>
                   </motion.div>
                 )}

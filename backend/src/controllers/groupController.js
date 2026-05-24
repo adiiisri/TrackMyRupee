@@ -464,10 +464,11 @@ export const deleteGroup = asyncHandler(async (req, res) => {
     throw new Error('Group not found');
   }
 
-  // Only creator can delete the entire group circle
-  if (group.creator.toString() !== req.user._id.toString()) {
+  // Any member of the group can delete the group circle
+  const isMember = group.members.some(id => id.toString() === req.user._id.toString());
+  if (!isMember) {
     res.status(403);
-    throw new Error('Unauthorized: Only the group creator can delete this group circle');
+    throw new Error('Unauthorized: You are not a member of this group circle');
   }
 
   // Delete all expenses of this group
