@@ -276,6 +276,14 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
 }
 
+.logo-text {
+  font-size: 1.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
 @media (max-width: 767px) {
   .dashboard-header {
     padding: 0.75rem 1rem !important;
@@ -287,8 +295,22 @@ h1, h2, h3, h4, h5, h6 {
     display: block !important;
   }
   .header-user-actions {
-    padding-left: 0.75rem !important;
-    gap: 0.75rem !important;
+    display: none !important; /* Hide standard user actions in mobile header */
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.1rem;
+  }
+  .add-btn-text {
+    display: none; /* Hide 'Add' text, keep only plus icon on phones */
+  }
+}
+
+@media (max-width: 350px) {
+  .logo-text {
+    display: none; /* Hide logo text entirely on extra small viewports */
   }
 }
 

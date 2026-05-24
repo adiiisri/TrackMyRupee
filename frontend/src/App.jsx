@@ -64,7 +64,7 @@ const Layout = ({ children }) => {
         {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
           <Activity color="var(--accent-primary)" size={28} />
-          <h2 style={{ fontSize: '1.25rem', fontFamily: 'Poppins, sans-serif', fontWeight: 700, margin: 0, letterSpacing: '-0.5px' }}>
+          <h2 className="logo-text">
             TrackMyRupee
           </h2>
         </Link>
@@ -80,9 +80,9 @@ const Layout = ({ children }) => {
         </nav>
 
         {/* RIGHT ACTIONS */}
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button onClick={() => setShowAddModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
-             Add <PlusCircle size={18} />
+             <span className="add-btn-text">Add</span> <PlusCircle size={20} />
           </button>
           
           <div className="header-user-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
@@ -115,7 +115,7 @@ const Layout = ({ children }) => {
             style={{
               backgroundColor: 'var(--bg-secondary)',
               borderBottom: '1px solid var(--border-color)',
-              padding: '1rem 2rem',
+              padding: '1.5rem 2rem',
               display: 'flex',
               flexDirection: 'column',
               gap: '1rem',
@@ -131,6 +131,20 @@ const Layout = ({ children }) => {
             <NavLink to="/groups" className="mobile-nav-link">Split Bill</NavLink>
             <NavLink to="/budgets" className="mobile-nav-link">Budgets</NavLink>
             <NavLink to="/goals" className="mobile-nav-link">Goals</NavLink>
+
+            <div style={{ height: '1px', backgroundColor: 'var(--border-color)', margin: '0.5rem 0' }} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Appearance & Session</span>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+                  {theme === 'light' ? <Moon size={18} color="var(--text-secondary)" /> : <Sun size={18} color="var(--warning)" />}
+                </button>
+                <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+                  <User size={18} color="var(--text-secondary)" />
+                </button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
