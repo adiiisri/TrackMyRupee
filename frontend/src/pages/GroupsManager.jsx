@@ -168,13 +168,16 @@ const GroupsManager = () => {
     }
   };
 
-  const handleDeleteGroup = async () => {
+  const handleDeleteGroup = async (groupObj) => {
+    const targetGroup = groupObj || activeGroup;
+    if (!targetGroup) return;
+
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete the group "${activeGroup.name}"? This will permanently delete all logged expenses and balance standings. This action CANNOT be undone.`
+      `Are you sure you want to delete the group "${targetGroup.name}"? This will permanently delete all logged expenses and balance standings. This action CANNOT be undone.`
     );
     if (!confirmDelete) return;
 
-    const res = await deleteGroup(activeGroup._id);
+    const res = await deleteGroup(targetGroup._id);
     if (res.success) {
       alert('Group circle deleted successfully!');
     } else {
@@ -455,21 +458,47 @@ const GroupsManager = () => {
                     onClick={() => selectGroup(group)}
                     whileHover={{ scale: 1.02 }}
                     style={{
-                      padding: '1rem',
+                      padding: '1rem 3rem 1rem 1rem',
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid var(--border-color)',
                       cursor: 'pointer',
                       background: isActive ? 'var(--accent-light)' : 'var(--bg-tertiary)',
                       borderColor: isActive ? 'var(--accent-primary)' : 'var(--border-color)',
                       transition: 'all 0.2s ease',
+                      position: 'relative',
                     }}
                   >
-                    <h4 style={{ color: isActive ? 'var(--accent-hover)' : 'var(--text-primary)', margin: 0 }}>
-                      {group.name}
-                    </h4>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                      {group.members.length} members • Created by {group.creator === user?._id ? 'You' : 'Friend'}
-                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <h4 style={{ color: isActive ? 'var(--accent-hover)' : 'var(--text-primary)', margin: 0 }}>
+                        {group.name}
+                      </h4>
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                        {group.members.length} members • Created by {group.creator === user?._id ? 'You' : 'Friend'}
+                      </p>
+                    </div>
+                    {group.creator === user?._id && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteGroup(group);
+                        }}
+                        title="Delete Group Circle"
+                        style={{
+                          position: 'absolute',
+                          right: '1rem',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--danger)',
+                          padding: '0.25rem',
+                          display: 'inline-flex',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
                   </motion.div>
                 );
               })}
@@ -530,13 +559,24 @@ const GroupsManager = () => {
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                   <h2 style={{ fontSize: '1.5rem', margin: 0 }}>{activeGroup.name}</h2>
-                  <button
-                    onClick={handleStartEditGroup}
-                    title="Manage Members"
-                    style={{ color: 'var(--accent-primary)', padding: '0.25rem', display: 'inline-flex' }}
-                  >
-                    <Settings size={20} />
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <button
+                      onClick={handleStartEditGroup}
+                      title="Manage Members"
+                      style={{ color: 'var(--accent-primary)', padding: '0.25rem', display: 'inline-flex' }}
+                    >
+                      <Settings size={20} />
+                    </button>
+                    {activeGroup.creator === user?._id && (
+                      <button
+                        onClick={() => handleDeleteGroup(activeGroup)}
+                        title="Delete Group Circle"
+                        style={{ color: 'var(--danger)', padding: '0.25rem', display: 'inline-flex' }}
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.75rem' }}>
