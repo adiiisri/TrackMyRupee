@@ -142,7 +142,9 @@ const GroupsManager = () => {
 
   const handleRemoveEditMember = (identifier) => {
     // Cannot remove group creator
-    if (identifier === activeGroup.creator || identifier === user?.email) {
+    const creatorMember = activeGroup.members.find(m => m._id === activeGroup.creator);
+    const isCreator = identifier === activeGroup.creator || (creatorMember && (identifier === creatorMember.email || identifier === creatorMember._id));
+    if (isCreator) {
       return alert('Group creator cannot be removed from the circle');
     }
     setEditGroupMembers((prev) => prev.filter((m) => m !== identifier && m !== identifier._id));
@@ -513,15 +515,13 @@ const GroupsManager = () => {
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                   <h2 style={{ fontSize: '1.5rem', margin: 0 }}>{activeGroup.name}</h2>
-                  {activeGroup.creator === user?._id && (
-                    <button
-                      onClick={handleStartEditGroup}
-                      title="Manage Members"
-                      style={{ color: 'var(--accent-primary)', padding: '0.25rem', display: 'inline-flex' }}
-                    >
-                      <Settings size={20} />
-                    </button>
-                  )}
+                  <button
+                    onClick={handleStartEditGroup}
+                    title="Manage Members"
+                    style={{ color: 'var(--accent-primary)', padding: '0.25rem', display: 'inline-flex' }}
+                  >
+                    <Settings size={20} />
+                  </button>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginTop: '0.75rem' }}>
@@ -599,7 +599,8 @@ const GroupsManager = () => {
                         <label style={{ fontSize: '0.8rem', fontWeight: 600 }}>Active Members List (Click × to remove)</label>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
                           {editGroupMembers.map((m) => {
-                            const isCreator = m === activeGroup.creator || (m && m._id === activeGroup.creator) || m === user?.email;
+                            const creatorMember = activeGroup.members.find(mem => mem._id === activeGroup.creator);
+                            const isCreator = m === activeGroup.creator || (creatorMember && (m === creatorMember.email || m === creatorMember._id));
                             return (
                               <span
                                 key={m._id || m}

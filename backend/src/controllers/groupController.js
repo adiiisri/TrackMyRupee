@@ -241,6 +241,16 @@ export const getGroupBalances = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Get all groups for logged-in user
+// @route   GET /api/groups
+// @access  Private
+export const getGroups = asyncHandler(async (req, res) => {
+  const groups = await Group.find({ members: req.user._id })
+    .populate('members', 'name email')
+    .sort({ createdAt: -1 });
+  res.status(200).json(groups);
+});
+
 // @desc    Update a group (name and members list)
 // @route   PUT /api/groups/:groupId
 // @access  Private
@@ -254,11 +264,13 @@ export const updateGroup = asyncHandler(async (req, res) => {
     throw new Error('Group not found');
   }
 
-  // Only group creator can edit the group details/members
-  if (group.creator.toString() !== req.user._id.toString()) {
+  // Any member of the group can edit group details/members
+  const isMember = group.members.some(id => id.toString() === req.user._id.toString());
+  if (!isMember) {
     res.status(403);
-    throw new Error('Unauthorized: Only the group creator can edit group details/members');
+    throw new Error('Unauthorized: You are not a member of this group');
   }
+
 
   if (name) {
     group.name = name.trim();

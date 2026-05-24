@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createGroup,
+  getGroups,
   updateGroup,
   createGroupExpense,
   getGroupExpenses,
@@ -12,8 +13,9 @@ import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Define group creation and editing route
+// Define group creation and list route
 router.route('/')
+  .get(protect, getGroups)
   .post(protect, createGroup);
 
 router.route('/:groupId')
