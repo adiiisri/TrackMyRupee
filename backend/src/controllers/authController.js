@@ -69,3 +69,21 @@ export const googleCallback = async (req, res, next) => {
     res.redirect(`${process.env.FRONTEND_URL || 'https://track-my-rupee.vercel.app'}/login?error=server_error`);
   }
 };
+
+// @desc    Get user profile
+// @route   GET /api/auth/me
+// @access  Private
+export const getMe = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
