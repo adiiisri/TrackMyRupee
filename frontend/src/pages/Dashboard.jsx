@@ -222,88 +222,7 @@ const Dashboard = () => {
       {/* Top Row: 3 Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
         
-        {/* Card 1: Spending Pace */}
-        <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-            <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Activity size={18} color="var(--text-muted)" /> Spending Pace
-            </h3>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.75rem', borderRadius: '1rem', backgroundColor: isUnderBudget ? 'var(--accent-light)' : 'var(--danger-light)', color: isUnderBudget ? 'var(--accent-hover)' : 'var(--danger)' }}>
-              {isUnderBudget ? 'On Track' : 'Off Track'}
-            </span>
-          </div>
-
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 style={{ fontSize: '1.5rem', color: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-              <CheckCircle size={24} /> ₹{Math.abs(budgetStatus).toLocaleString()} {isUnderBudget ? 'under budget' : 'over budget'}
-            </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>vs ideal pace for day {new Date().getDate()}/31</p>
-          </div>
-
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-             <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>₹{Math.round(totalExpenses / Math.max(1, new Date().getDate())).toLocaleString()} <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ day</span></h2>
-             <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '0.25rem' }}>Your Burn Rate</p>
-          </div>
-
-          <div style={{ marginTop: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-              <span>Budget Used</span>
-              <span style={{ color: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)' }}>{totalBudget > 0 ? Math.round((totalExpenses/totalBudget)*100) : 0}%</span>
-            </div>
-            <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--bg-tertiary)', borderRadius: '4px', overflow: 'hidden' }}>
-              <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((totalExpenses/Math.max(totalBudget, 1))*100, 100)}%` }} transition={{ duration: 1, delay: 0.5 }} style={{ height: '100%', backgroundColor: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)' }} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-              <span>₹{totalExpenses.toLocaleString()} spent</span>
-              <span>₹{totalBudget.toLocaleString()}</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Card 2: Asset Allocation (Categories) */}
-        <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-           <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
-              <PieChart size={18} color="var(--text-muted)" /> Expense Allocation
-            </h3>
-            
-            <div style={{ flex: 1, position: 'relative', minHeight: '250px' }}>
-              {expenseByCategory.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={expenseByCategory} innerRadius={80} outerRadius={110} paddingAngle={2} dataKey="value" stroke="none">
-                      {expenseByCategory.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }} itemStyle={{ color: 'var(--text-primary)' }} formatter={(value) => `₹${value}`} />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p className="text-muted">No data</p></div>
-              )}
-              {/* Inner text overlay */}
-              {expenseByCategory.length > 0 && (
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                  <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>{Math.round((expenseByCategory[0].value / totalExpenses) * 100)}%</h2>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>{expenseByCategory[0].name}</p>
-                </div>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '1rem' }}>
-               {expenseByCategory.slice(0,3).map((cat, i) => (
-                 <div key={i} style={{ textAlign: 'center' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                     <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color }}></div>
-                     {cat.name}
-                   </div>
-                   <h4 style={{ fontSize: '1rem' }}>{Math.round((cat.value / totalExpenses) * 100)}%</h4>
-                 </div>
-               ))}
-            </div>
-        </motion.div>
-
-        {/* Card 3: Quick Add Expense */}
+        {/* Card 1: Quick Add Expense */}
         <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
            <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
               <PlusCircle size={18} color="var(--accent-primary)" /> Quick Add Expense
@@ -421,6 +340,87 @@ const Dashboard = () => {
                {submitting ? 'Adding...' : 'Add Expense'}
              </button>
            </form>
+        </motion.div>
+
+        {/* Card 2: Spending Pace */}
+        <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Activity size={18} color="var(--text-muted)" /> Spending Pace
+            </h3>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, padding: '0.25rem 0.75rem', borderRadius: '1rem', backgroundColor: isUnderBudget ? 'var(--accent-light)' : 'var(--danger-light)', color: isUnderBudget ? 'var(--accent-hover)' : 'var(--danger)' }}>
+              {isUnderBudget ? 'On Track' : 'Off Track'}
+            </span>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h2 style={{ fontSize: '1.5rem', color: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <CheckCircle size={24} /> ₹{Math.abs(budgetStatus).toLocaleString()} {isUnderBudget ? 'under budget' : 'over budget'}
+            </h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>vs ideal pace for day {new Date().getDate()}/31</p>
+          </div>
+
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+             <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>₹{Math.round(totalExpenses / Math.max(1, new Date().getDate())).toLocaleString()} <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 500 }}>/ day</span></h2>
+             <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '0.25rem' }}>Your Burn Rate</p>
+          </div>
+
+          <div style={{ marginTop: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+              <span>Budget Used</span>
+              <span style={{ color: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)' }}>{totalBudget > 0 ? Math.round((totalExpenses/totalBudget)*100) : 0}%</span>
+            </div>
+            <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--bg-tertiary)', borderRadius: '4px', overflow: 'hidden' }}>
+              <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min((totalExpenses/Math.max(totalBudget, 1))*100, 100)}%` }} transition={{ duration: 1, delay: 0.5 }} style={{ height: '100%', backgroundColor: isUnderBudget ? 'var(--accent-primary)' : 'var(--danger)' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+              <span>₹{totalExpenses.toLocaleString()} spent</span>
+              <span>₹{totalBudget.toLocaleString()}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Card 3: Asset Allocation (Categories) */}
+        <motion.div variants={itemVariants} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+           <h3 style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem' }}>
+              <PieChart size={18} color="var(--text-muted)" /> Expense Allocation
+            </h3>
+            
+            <div style={{ flex: 1, position: 'relative', minHeight: '250px' }}>
+              {expenseByCategory.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={expenseByCategory} innerRadius={80} outerRadius={110} paddingAngle={2} dataKey="value" stroke="none">
+                      {expenseByCategory.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-md)' }} itemStyle={{ color: 'var(--text-primary)' }} formatter={(value) => `₹${value}`} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p className="text-muted">No data</p></div>
+              )}
+              {/* Inner text overlay */}
+              {expenseByCategory.length > 0 && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                  <h2 style={{ fontSize: '1.75rem', fontWeight: 700 }}>{Math.round((expenseByCategory[0].value / totalExpenses) * 100)}%</h2>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>{expenseByCategory[0].name}</p>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '1rem' }}>
+               {expenseByCategory.slice(0,3).map((cat, i) => (
+                 <div key={i} style={{ textAlign: 'center' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                     <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color }}></div>
+                     {cat.name}
+                   </div>
+                   <h4 style={{ fontSize: '1rem' }}>{Math.round((cat.value / totalExpenses) * 100)}%</h4>
+                 </div>
+               ))}
+            </div>
         </motion.div>
 
       </div>
