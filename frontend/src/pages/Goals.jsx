@@ -82,7 +82,7 @@ const Goals = () => {
 
       {/* GOALS GRID */}
       {loading ? <p>Loading goals...</p> : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
           {goals.map(goal => {
             const percent = Math.min((goal.savedAmount / goal.targetAmount) * 100, 100).toFixed(1);
             return (

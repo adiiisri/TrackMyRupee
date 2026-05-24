@@ -357,7 +357,7 @@ const GroupsManager = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="container animate-fade-in"
-      style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem', padding: '1rem 0' }}
+      style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', padding: '1rem 0' }}
     >
       {/* LEFT COLUMN: Groups Management */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>

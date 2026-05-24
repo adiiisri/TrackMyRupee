@@ -253,7 +253,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1023px) and (min-width: 768px) {
   /* Wrap header and flow nav links to prevent any overlap */
   .dashboard-header {
     flex-wrap: wrap;
@@ -269,6 +269,40 @@ h1, h2, h3, h4, h5, h6 {
     padding-top: 0.75rem;
     margin-top: 0.25rem;
   }
+}
+
+/* Responsive Nav Controls */
+.mobile-menu-toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .dashboard-header {
+    padding: 0.75rem 1rem !important;
+  }
+  .dashboard-nav {
+    display: none !important;
+  }
+  .mobile-menu-toggle {
+    display: block !important;
+  }
+  .header-user-actions {
+    padding-left: 0.75rem !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Mobile nav link styles */
+.mobile-nav-link {
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: color 0.2s ease;
+}
+.mobile-nav-link:hover, .mobile-nav-link.active {
+  color: var(--accent-primary);
+  text-decoration: none;
 }
 
 /* Interactive Cursor Trail & Click Ripple System */

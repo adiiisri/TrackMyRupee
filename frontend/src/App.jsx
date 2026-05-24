@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, User, PlusCircle, Activity, Moon, Sun, X, Shield, Laptop, Palmtree } from 'lucide-react';
+import { Bell, User, PlusCircle, Activity, Moon, Sun, X, Menu, Shield, Laptop, Palmtree } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { ExpenseProvider, useExpense } from './context/ExpenseContext';
 import { GoalProvider } from './context/GoalContext';
@@ -29,9 +29,12 @@ const Layout = ({ children }) => {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   
   const [showAddModal, setShowAddModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     amount: '', category: 'Food', date: new Date().toISOString().split('T')[0], description: '', isRecurring: false, recurringFrequency: 'none', paymentMode: 'Cash'
   });
+
+  const location = useLocation();
 
   const handleGlobalAddSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +51,10 @@ const Layout = ({ children }) => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location]);
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   
@@ -78,7 +85,7 @@ const Layout = ({ children }) => {
              Add <PlusCircle size={18} />
           </button>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
+          <div className="header-user-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', borderLeft: '1px solid var(--border-color)', paddingLeft: '1.5rem' }}>
             <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
               {theme === 'light' ? <Moon size={16} color="var(--text-secondary)" /> : <Sun size={16} color="var(--warning)" />}
             </button>
@@ -90,9 +97,48 @@ const Layout = ({ children }) => {
               <User size={16} color="var(--text-secondary)" />
             </button>
           </div>
+
+          <button 
+            className="mobile-menu-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ display: 'none', color: 'var(--text-primary)', padding: '0.25rem' }}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </header>
-      
+
+      {/* Mobile Navigation Dropdown */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mobile-nav-container"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderBottom: '1px solid var(--border-color)',
+              padding: '1rem 2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+              boxShadow: 'var(--shadow-md)',
+              position: 'sticky',
+              top: '70px',
+              zIndex: 49
+            }}
+          >
+            <NavLink to="/dashboard" className="mobile-nav-link">Dashboard</NavLink>
+            <NavLink to="/incomes" className="mobile-nav-link">Income</NavLink>
+            <NavLink to="/expenses" className="mobile-nav-link">Expenses</NavLink>
+            <NavLink to="/groups" className="mobile-nav-link">Split Bill</NavLink>
+            <NavLink to="/budgets" className="mobile-nav-link">Budgets</NavLink>
+            <NavLink to="/goals" className="mobile-nav-link">Goals</NavLink>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main style={{ padding: '2rem 1rem', flex: 1, backgroundColor: 'var(--bg-primary)' }}>
         {children}
       </main>
