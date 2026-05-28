@@ -79,6 +79,72 @@ npm run dev
 
 ---
 
+## 🔄 Application Workflow & Data Flow
+
+Below is the dynamic flow diagram illustrating the application's client-server architecture, authentication guard, context updates, and request lifecycle:
+
+```mermaid
+flowchart TD
+    %% Styling Configuration
+    classDef client fill:#e6fffa,stroke:#10b981,stroke-width:2px,color:#064e3b;
+    classDef server fill:#f0f9ff,stroke:#0284c7,stroke-width:2px,color:#0c4a6e;
+    classDef database fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b;
+    classDef auth fill:#fff5f5,stroke:#e53e3e,stroke-width:2px,color:#742a2a;
+    classDef default fill:#f8fafc,stroke:#475569,stroke-width:1px,color:#1e293b;
+
+    subgraph Client ["Client-Side (React App)"]
+        A[User Visits Website] --> B[Landing Page]
+        B --> C{Is Logged In?}
+        C -- No --> D[Login/Register Page]:::auth
+        D --> E{Valid Credentials?}
+        E -- No --> D
+        E -- Yes --> F[Issue JWT & Save to LocalStorage]:::client
+        F --> G[Redirect to Dashboard]:::client
+        C -- Yes --> G
+        G --> H[Frontend Dashboard Layout]:::client
+        H --> I{Navigation Menu}
+        
+        %% Navigation Options
+        I -- Dashboard --> J1[Analyze reports]:::client
+        J1 --> J2[Display charts & stats]:::client
+        
+        I -- Split Bill --> K1[Manage Group Expenses]:::client
+        K1 --> K2[Quick Add / CSV Export]:::client
+        
+        I -- Income/Expenses --> L1[Record Transactions]:::client
+        L1 --> L2[Perform CRUD operations]:::client
+        
+        I -- Budgets --> M1[Set category limits]:::client
+        M1 --> M2[Alert if spending > 80%]:::client
+        
+        I -- Goals --> N1[Set savings targets]:::client
+        N1 --> N2[Track milestone progress]:::client
+
+        %% Convergence
+        J2 & K2 & L2 & M2 & N2 --> O[Trigger API Action]:::client
+        O --> P[Axios Interceptor: Attach JWT Bearer Token]:::client
+    end
+
+    subgraph Server ["Server-Side (Express & Node.js)"]
+        P --> Q[API Endpoint Routed]:::server
+        Q --> R{JWT Verification Middleware}
+        R -- Verification Failed --> S[Clear LocalStorage & Force Login]:::auth
+        R -- Verification Passed --> T[Controller Logic Executes]:::server
+        T --> U[Mongoose Validation]:::server
+    end
+
+    subgraph DB ["Database (MongoDB Atlas)"]
+        U --> V[(Database Operations)]:::database
+        V --> W[Return Document Result]:::database
+    end
+
+    W --> X[Express Controller Returns JSON]:::server
+    X --> Y[React Context Provider State Updates]:::client
+    Y --> Z[Re-render Dynamic UI Components]:::client
+```
+
+---
+
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
