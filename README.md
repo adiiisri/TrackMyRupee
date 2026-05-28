@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="frontend/public/favicon.svg" alt="TrackMyRupee Logo" width="120" />
-  <h1>💸 TrackMyRupee</h1>
+  <img src="logo.svg" alt="TrackMyRupee Logo" width="120" />
+  <h1>📈 TrackMyRupee</h1>
   <p><strong>A beautifully designed, full-stack personal finance and expense tracking application.</strong></p>
 
   [![Live Demo](https://img.shields.io/badge/Live%20Demo-track--my--rupee.vercel.app-10B981?style=for-the-badge&logo=vercel)](https://track-my-rupee.vercel.app/)
