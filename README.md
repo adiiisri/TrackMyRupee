@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/public/icons.svg" alt="TrackMyRupee Logo" width="120" />
+  <img src="frontend/public/favicon.svg" alt="TrackMyRupee Logo" width="120" />
   <h1>💸 TrackMyRupee</h1>
   <p><strong>A beautifully designed, full-stack personal finance and expense tracking application.</strong></p>
 
