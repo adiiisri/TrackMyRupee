@@ -21,6 +21,7 @@ import Goals from './pages/Goals';
 import Landing from './pages/Landing';
 import Footer from './components/Footer';
 import { NavLink, Link } from 'react-router-dom';
+import Logo from './components/Logo';
 
 // Layout Placeholder
 const Layout = ({ children }) => {
@@ -63,7 +64,7 @@ const Layout = ({ children }) => {
       <header className="dashboard-header">
         {/* LOGO */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
-          <Activity color="var(--accent-primary)" size={28} />
+          <Logo size={28} color="var(--accent-primary)" />
           <h2 className="logo-text">
             TrackMyRupee
           </h2>

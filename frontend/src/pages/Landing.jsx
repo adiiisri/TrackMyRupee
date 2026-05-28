@@ -5,6 +5,7 @@ import {
   Sparkle, CircleDollarSign, Moon, Sun 
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import Logo from '../components/Logo';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -70,17 +71,7 @@ const Landing = () => {
         position: 'relative'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            padding: '0.5rem',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
-          }}>
-            <CircleDollarSign size={24} color="#ffffff" />
-          </div>
+          <Logo size={40} variant="full" />
           <h1 style={{
             fontSize: '1.25rem',
             fontWeight: 800,
