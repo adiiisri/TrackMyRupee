@@ -2,8 +2,7 @@
 node_modules/
 
 # Environment variables
-.env
-.env.*
+.env*
 !.env.example
 
 # Build files and output
@@ -12,6 +11,8 @@ dist-ssr/
 build/
 out/
 .vite/
+.next/
+target/
 
 # Logs
 logs
@@ -25,9 +26,8 @@ yarn-error.log*
 Thumbs.db
 
 # Editor directories and temporary files
-.vscode/*
-!.vscode/extensions.json
-.idea
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
@@ -39,12 +39,15 @@ ad.md
 Flow.md
 colour.md
 
-# Additional sensitive and generated files
-.next/
-target/
+# Cache and environments
 __pycache__/
 venv/
+
+# Database files
 *.db
 *.sqlite
+
+# Keys and certificates
 *.pem
 *.key
+
