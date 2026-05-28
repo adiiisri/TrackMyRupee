@@ -150,5 +150,5 @@ flowchart TD
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
 
 <div align="center">
-  <sub>Built with ❤️ by the TrackMyRupee Team.</sub>
+  <sub>Made with ❤️ and ☕ by adiiisri.</sub>
 </div>
