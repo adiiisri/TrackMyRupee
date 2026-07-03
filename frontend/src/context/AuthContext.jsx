@@ -15,13 +15,6 @@ export const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       let userInfo = localStorage.getItem('userInfo');
 
-      // Seed default mock token if not present to bypass login screen
-      if (!userInfo) {
-        const defaultMock = { token: 'mock-token', name: 'Demo User', email: 'demo@example.com' };
-        localStorage.setItem('userInfo', JSON.stringify(defaultMock));
-        userInfo = JSON.stringify(defaultMock);
-      }
-
       if (userInfo) {
         try {
           const parsedUser = JSON.parse(userInfo);
