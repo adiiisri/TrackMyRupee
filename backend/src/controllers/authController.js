@@ -80,6 +80,49 @@ export const getMe = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      age: user.age,
+      profession: user.profession,
+      gender: user.gender,
+      phone: user.phone,
+      avatar: user.avatar,
+      currency: user.currency,
+      bio: user.bio,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    if (req.body.name) user.name = req.body.name;
+    if (req.body.age !== undefined) user.age = req.body.age === '' ? null : Number(req.body.age);
+    if (req.body.profession !== undefined) user.profession = req.body.profession;
+    if (req.body.gender !== undefined) user.gender = req.body.gender;
+    if (req.body.phone !== undefined) user.phone = req.body.phone;
+    if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
+    if (req.body.currency !== undefined) user.currency = req.body.currency;
+    if (req.body.bio !== undefined) user.bio = req.body.bio;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      age: updatedUser.age,
+      profession: updatedUser.profession,
+      gender: updatedUser.gender,
+      phone: updatedUser.phone,
+      avatar: updatedUser.avatar,
+      currency: updatedUser.currency,
+      bio: updatedUser.bio,
     });
   } else {
     res.status(404);

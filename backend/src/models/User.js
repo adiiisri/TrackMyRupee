@@ -27,6 +27,17 @@ const userSchema = new mongoose.Schema(
       enum: ['local', 'google'],
       default: 'local',
     },
+    age: { type: Number },
+    profession: { type: String },
+    gender: { 
+      type: String, 
+      enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
+      default: 'Prefer not to say'
+    },
+    phone: { type: String },
+    avatar: { type: String, default: '👤' },
+    currency: { type: String, default: 'INR' },
+    bio: { type: String },
   },
   {
     timestamps: true,

@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { authUser, registerUser, googleCallback, getMe } from '../controllers/authController.js';
+import { authUser, registerUser, googleCallback, getMe, updateProfile } from '../controllers/authController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -8,6 +8,7 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.post('/login', authUser);
 router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
 
 // Google OAuth initiate
 router.get(

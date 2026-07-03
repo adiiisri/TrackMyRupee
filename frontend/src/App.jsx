@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { User, PlusCircle, Activity, Moon, Sun, X, Menu, Shield, Laptop, Palmtree } from 'lucide-react';
+import { User, PlusCircle, Activity, Moon, Sun, X, Menu, Shield, Laptop, Palmtree, LogOut } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { ExpenseProvider, useExpense } from './context/ExpenseContext';
 import { GoalProvider } from './context/GoalContext';
@@ -19,6 +19,7 @@ import IncomesManager from './pages/IncomesManager';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
 import Landing from './pages/Landing';
+import Profile from './pages/Profile';
 import Footer from './components/Footer';
 import { NavLink, Link } from 'react-router-dom';
 import Logo from './components/Logo';
@@ -90,8 +91,11 @@ const Layout = ({ children }) => {
             <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
               {theme === 'light' ? <Moon size={16} color="var(--text-secondary)" /> : <Sun size={16} color="var(--warning)" />}
             </button>
-            <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+            <Link to="/profile" title="Profile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
               <User size={16} color="var(--text-secondary)" />
+            </Link>
+            <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+              <LogOut size={16} color="var(--text-secondary)" />
             </button>
           </div>
 
@@ -141,8 +145,11 @@ const Layout = ({ children }) => {
                 <button onClick={toggleTheme} title="Toggle Theme" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
                   {theme === 'light' ? <Moon size={18} color="var(--text-secondary)" /> : <Sun size={18} color="var(--warning)" />}
                 </button>
-                <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} title="Profile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
                   <User size={18} color="var(--text-secondary)" />
+                </Link>
+                <button onClick={logout} title="Logout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)' }}>
+                  <LogOut size={18} color="var(--text-secondary)" />
                 </button>
               </div>
             </div>
@@ -306,6 +313,7 @@ function App() {
                 <Route path="/groups" element={<ProtectedRoute><GroupsManager /></ProtectedRoute>} />
                 <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
                 <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               </Routes>
             </Router>
           </GroupProvider>
