@@ -22,6 +22,7 @@ Welcome to **TrackMyRupee**, a comprehensive expense tracker built with the MERN
 * 🎯 **Smart Budgeting:** Set customized budgets for different categories. Visual progress bars track your spending and alert you when you cross 80%.
 * 🔄 **Recurring Expenses:** Automate your fixed costs! Mark expenses as daily, weekly, or monthly, and a robust backend cron job handles the rest.
 * 👥 **Group Expenses:** Split bills and manage shared expenses seamlessly with friends and family.
+* 👤 **User Profiles:** Personalize your account with custom avatars (emojis), profession details, preferred currency, and a custom bio.
 * 🔐 **Secure Authentication:** Enjoy secure access with unified login options, including JWT-based local authentication and seamless Google OAuth.
 * 🎨 **Premium UI/UX:** A stunning, fully responsive interface styled with clean CSS variables and a dynamic, native-feeling Light/Dark mode.
 
@@ -120,8 +121,11 @@ flowchart TD
         I -- Goals --> N1[Set savings targets]:::client
         N1 --> N2[Track milestone progress]:::client
 
+        I -- Profile --> P1[Update User Identity]:::client
+        P1 --> P2[Select Avatar & Details]:::client
+
         %% Convergence
-        J2 & K2 & L2 & M2 & N2 --> O[Trigger API Action]:::client
+        J2 & K2 & L2 & M2 & N2 & P2 --> O[Trigger API Action]:::client
         O --> P[Axios Interceptor: Attach JWT Bearer Token]:::client
     end
 
